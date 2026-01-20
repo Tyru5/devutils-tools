@@ -1,0 +1,51 @@
+---
+import { getCollection } from "astro:content";
+import ToolLayout from "../layouts/ToolLayout.astro";
+import { getToolBySlug } from "../lib/tools";
+
+// Import React tool components
+import JsonFormatter from "../components/tools/JsonFormatter";
+import Base64Tool from "../components/tools/Base64Tool";
+import UuidGenerator from "../components/tools/UuidGenerator";
+import UrlEncoder from "../components/tools/UrlEncoder";
+import TimestampConverter from "../components/tools/TimestampConverter";
+import HashGenerator from "../components/tools/HashGenerator";
+import JwtDecoder from "../components/tools/JwtDecoder";
+import RegexTester from "../components/tools/RegexTester";
+import DiffChecker from "../components/tools/DiffChecker";
+import ColorConverter from "../components/tools/ColorConverter";
+
+export async function getStaticPaths() {
+  const toolEntries = await getCollection("tools");
+  return toolEntries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const tool = getToolBySlug(entry.slug);
+const slug = entry.slug;
+---
+
+<ToolLayout
+  title={tool?.name || entry.data.title}
+  description={tool?.description || entry.data.description}
+  slug={entry.slug}
+  keywords={tool?.keywords}
+>
+  <Fragment slot="tool">
+    {slug === "json-formatter" && <JsonFormatter client:load />}
+    {slug === "base64" && <Base64Tool client:load />}
+    {slug === "uuid-generator" && <UuidGenerator client:load />}
+    {slug === "url-encoder" && <UrlEncoder client:load />}
+    {slug === "timestamp-converter" && <TimestampConverter client:load />}
+    {slug === "hash-generator" && <HashGenerator client:load />}
+    {slug === "jwt-decoder" && <JwtDecoder client:load />}
+    {slug === "regex-tester" && <RegexTester client:load />}
+    {slug === "diff-checker" && <DiffChecker client:load />}
+    {slug === "color-converter" && <ColorConverter client:load />}
+  </Fragment>
+  <Content />
+</ToolLayout>

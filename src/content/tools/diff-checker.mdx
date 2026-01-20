@@ -1,0 +1,47 @@
+---
+title: "Diff Checker"
+description: "Compare two texts and see differences highlighted line by line."
+lastUpdated: 2025-01-18
+---
+
+## What is a Diff?
+
+A diff (short for difference) shows the changes between two pieces of text. Lines that were added appear in green with a `+` prefix, and lines that were removed appear in red with a `-` prefix.
+
+## How to Use
+
+1. Paste your original text in the left field
+2. Paste the modified text in the right field
+3. The diff output shows all changes with color highlighting
+4. Use options to ignore whitespace or case differences
+
+## Options
+
+**Ignore whitespace**: Treats multiple spaces/tabs as equivalent and ignores trailing whitespace. Useful when formatting changes don't matter.
+
+**Ignore case**: Treats uppercase and lowercase as identical. Useful for case-insensitive comparisons.
+
+## Understanding the Output
+
+The diff output shows line numbers for both the original (left) and modified (right) texts:
+
+- **Green (+)**: Line was added in the modified version
+- **Red (-)**: Line was removed from the original
+- **Gray ( )**: Line is unchanged in both versions
+
+## Common Uses
+
+- **Code review**: See what changed between versions
+- **Document comparison**: Track edits in contracts or documents
+- **Configuration changes**: Verify changes to config files
+- **Debugging**: Find unexpected changes in output
+
+## Algorithm
+
+This tool uses a line-by-line diff based on the Longest Common Subsequence (LCS) algorithm. It finds the longest sequence of lines that appear in both texts in the same order, then marks everything else as additions or deletions.
+
+## Tips
+
+- For large texts, look at the summary (additions/deletions count) first
+- Use the swap button to reverse the comparison direction
+- Unchanged lines provide context for understanding changes

@@ -1,0 +1,54 @@
+---
+title: "Color Converter"
+description: "Convert between HEX, RGB, and HSL color formats with live preview."
+lastUpdated: 2025-01-18
+---
+
+## Color Formats
+
+**HEX** — A 6-digit hexadecimal code representing RGB values. Commonly used in CSS and web design. Example: `#3b82f6`
+
+**RGB** — Red, Green, Blue values from 0-255 each. The standard for digital displays. Example: `rgb(59, 130, 246)`
+
+**HSL** — Hue (0-360°), Saturation (0-100%), Lightness (0-100%). More intuitive for color adjustments. Example: `hsl(217, 91%, 60%)`
+
+## When to Use Each
+
+**HEX** is most common in web development and design tools. It's compact and widely supported.
+
+**RGB** is useful when you need to work with color channels individually or when interfacing with graphics libraries.
+
+**HSL** is best for making intuitive color adjustments — want a lighter shade? Increase lightness. Want less vibrant? Decrease saturation.
+
+## Understanding HSL
+
+**Hue** is the base color on the color wheel (0° = red, 120° = green, 240° = blue).
+
+**Saturation** is color intensity. 0% is grayscale, 100% is fully saturated.
+
+**Lightness** is brightness. 0% is black, 100% is white, 50% is the pure color.
+
+## Tips
+
+- Use the color picker for visual selection
+- Adjust HSL sliders for intuitive modifications
+- Click "Random" to discover new colors
+- Copy any format directly to your clipboard
+
+## CSS Usage
+
+All three formats work in CSS:
+
+```css
+color: #3b82f6;
+color: rgb(59, 130, 246);
+color: hsl(217, 91%, 60%);
+```
+
+Modern CSS also supports alpha (transparency):
+
+```css
+color: #3b82f680; /* HEX with alpha */
+color: rgba(59, 130, 246, 0.5); /* RGB with alpha */
+color: hsla(217, 91%, 60%, 0.5); /* HSL with alpha */
+```

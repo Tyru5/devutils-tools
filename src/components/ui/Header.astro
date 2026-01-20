@@ -1,0 +1,45 @@
+---
+import ThemeToggle from "./ThemeToggle.astro";
+import { tools } from "../../lib/tools";
+---
+
+<header
+  class="border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
+>
+  <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
+    <a href="/" class="flex items-center gap-2 text-xl font-bold">
+      <span class="text-blue-600">⚡</span>
+      <span>DevUtils</span>
+    </a>
+
+    <div class="flex items-center gap-4">
+      <!-- Tool Dropdown -->
+      <div class="group relative">
+        <button
+          class="text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+        >
+          Tools ▾
+        </button>
+        <div
+          class="invisible absolute right-0 top-full z-50 mt-2 w-64 rounded-lg border border-gray-200 bg-white opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100 dark:border-gray-700 dark:bg-gray-800"
+        >
+          <div class="max-h-80 overflow-y-auto p-2">
+            {
+              tools.map((tool) => (
+                <a
+                  href={`/${tool.slug}`}
+                  class="block rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <span class="mr-2">{tool.icon}</span>
+                  {tool.name}
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+
+      <ThemeToggle />
+    </div>
+  </div>
+</header>

@@ -1,0 +1,84 @@
+---
+import Header from "../components/ui/Header.astro";
+import Footer from "../components/ui/Footer.astro";
+import ToolGrid from "../components/ui/ToolGrid.astro";
+import { tools, categoryNames } from "../lib/tools";
+import "../styles/global.css";
+
+const categories = [
+  "encode-decode",
+  "format",
+  "generate",
+  "convert",
+  "validate",
+] as const;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DevUtils - Free Online Developer Tools</title>
+    <meta
+      name="description"
+      content="Free online tools for developers. JSON formatter, Base64 encoder, UUID generator, and more. Fast, private, no sign-up required."
+    />
+    <link rel="canonical" href="https://devutils.tools/" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="DevUtils - Free Online Developer Tools"
+    />
+    <meta
+      property="og:description"
+      content="Free online tools for developers. Fast, private, no sign-up required."
+    />
+    <meta property="og:url" content="https://devutils.tools/" />
+
+    <script is:inline>
+      if (
+        localStorage.theme === "dark" ||
+        (!("theme" in localStorage) &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.documentElement.classList.add("dark");
+      }
+    </script>
+  </head>
+  <body
+    class="flex min-h-screen flex-col bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100"
+  >
+    <Header />
+
+    <main class="mx-auto w-full max-w-5xl flex-1 px-4 py-12">
+      <div class="mb-12 text-center">
+        <h1 class="mb-4 text-4xl font-bold">Developer Utilities</h1>
+        <p class="mx-auto max-w-2xl text-xl text-gray-600 dark:text-gray-400">
+          Fast, free, privacy-friendly tools. Everything runs in your browser —
+          your data never leaves your machine.
+        </p>
+      </div>
+
+      {
+        categories.map((category) => {
+          const categoryTools = tools.filter((t) => t.category === category);
+          if (categoryTools.length === 0) return null;
+
+          return (
+            <section class="mb-10">
+              <h2 class="mb-4 text-lg font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                {categoryNames[category]}
+              </h2>
+              <ToolGrid tools={categoryTools} />
+            </section>
+          );
+        })
+      }
+    </main>
+
+    <Footer />
+  </body>
+</html>

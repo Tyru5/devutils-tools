@@ -1,0 +1,42 @@
+---
+title: "URL Encode/Decode"
+description: "Encode special characters for URLs or decode percent-encoded strings."
+lastUpdated: 2025-01-18
+---
+
+## What is URL Encoding?
+
+URL encoding (also called percent-encoding) converts characters into a format that can be safely transmitted in a URL. Special characters are replaced with a `%` followed by their hexadecimal value.
+
+For example, a space becomes `%20`, and `&` becomes `%26`.
+
+## Component vs Full URL
+
+**Component encoding** (`encodeURIComponent`) encodes all special characters, including `/`, `?`, and `&`. Use this for individual query parameter values.
+
+**Full URL encoding** (`encodeURI`) preserves URL structure characters like `/`, `?`, `&`, and `=`. Use this for complete URLs where you want to keep the structure intact.
+
+## When to use which?
+
+**Use Component for:**
+
+- Query parameter values
+- Path segments that might contain special characters
+- Any user input that will be part of a URL
+
+**Use Full URL for:**
+
+- Complete URLs that are already properly formed
+- URLs where you only need to encode spaces and international characters
+
+## Examples
+
+| Input          | Component          | Full URL        |
+| -------------- | ------------------ | --------------- |
+| `hello world`  | `hello%20world`    | `hello%20world` |
+| `a=1&b=2`      | `a%3D1%26b%3D2`    | `a=1&b=2`       |
+| `path/to/file` | `path%2Fto%2Ffile` | `path/to/file`  |
+
+## Privacy
+
+All encoding and decoding happens locally in your browser. No data is sent to any server.

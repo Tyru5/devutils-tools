@@ -1,0 +1,45 @@
+---
+title: "UUID Generator"
+description: "Generate random UUIDs (v4) instantly. Supports bulk generation."
+lastUpdated: 2025-01-18
+---
+
+## What is a UUID?
+
+A UUID (Universally Unique Identifier) is a 128-bit identifier that's guaranteed to be unique across space and time. Also known as GUIDs (Globally Unique Identifiers), UUIDs are used extensively in databases, distributed systems, and APIs.
+
+## UUID Format
+
+A standard UUID looks like this: `550e8400-e29b-41d4-a716-446655440000`
+
+It consists of 32 hexadecimal characters displayed in 5 groups separated by hyphens, in the pattern `8-4-4-4-12`.
+
+## UUID Versions
+
+This tool generates **Version 4 UUIDs**, which are randomly generated. The "4" in the third group indicates the version:
+
+- **v1** — Based on timestamp and MAC address
+- **v4** — Random (this tool)
+- **v5** — Based on namespace and name using SHA-1
+
+Version 4 is the most commonly used because it requires no coordination or special hardware.
+
+## How unique are they?
+
+Extremely unique. The probability of generating two identical v4 UUIDs is astronomically low. You'd need to generate about 2.71 quintillion UUIDs to have a 50% chance of a collision.
+
+## Options
+
+**Uppercase** — Display UUIDs in uppercase letters (A-F instead of a-f).
+
+**No dashes** — Remove the hyphens for a compact 32-character format.
+
+**Bulk generation** — Generate up to 100 UUIDs at once.
+
+## Use cases
+
+- Database primary keys
+- Session identifiers
+- File naming
+- Distributed system coordination
+- API request tracking

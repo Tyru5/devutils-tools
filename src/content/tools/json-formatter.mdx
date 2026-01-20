@@ -1,0 +1,37 @@
+---
+title: "JSON Formatter & Validator"
+description: "Format, validate, and minify JSON instantly in your browser."
+lastUpdated: 2025-01-18
+---
+
+## What is JSON?
+
+JSON (JavaScript Object Notation) is a lightweight data format used for storing and exchanging data. It's human-readable, easy to parse, and supported by virtually every programming language.
+
+## How to use this tool
+
+1. Paste your JSON into the input area on the left
+2. Click **Format** to beautify with indentation or **Minify** to compress
+3. The tool automatically validates your JSON and shows errors if any
+4. Use the **Copy** button to copy the result to your clipboard
+5. Choose your preferred indentation style (2 spaces, 4 spaces, or tabs)
+
+## Common JSON errors
+
+**Missing quotes around keys** — JSON requires double quotes around property names. `{name: "test"}` is invalid; use `{"name": "test"}`.
+
+**Trailing commas** — JSON doesn't allow trailing commas. `{"a": 1,}` is invalid.
+
+**Single quotes** — JSON only accepts double quotes for strings. `{'name': 'test'}` is invalid.
+
+**Unquoted strings** — All string values must be in double quotes. `{"name": test}` is invalid.
+
+## Is my data safe?
+
+Yes. All processing happens locally in your browser. Your JSON is never sent to any server. You can verify this by disconnecting from the internet and using the tool — it will still work.
+
+## Tips
+
+- Use **Ctrl/Cmd + V** to paste and the tool will auto-detect JSON
+- The validator shows exactly where errors occur in your JSON
+- For very large files (10MB+), consider using a command-line tool like `jq`

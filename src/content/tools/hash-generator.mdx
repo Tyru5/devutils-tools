@@ -1,0 +1,43 @@
+---
+title: "Hash Generator"
+description: "Generate MD5, SHA-1, SHA-256, and SHA-512 hashes from text."
+lastUpdated: 2025-01-18
+---
+
+## What is Hashing?
+
+A hash function takes input data and produces a fixed-size string of characters, called a hash or digest. The same input always produces the same hash, but even a tiny change in the input produces a completely different hash.
+
+## Supported Algorithms
+
+**MD5** (128-bit) — Fast but cryptographically broken. Use only for checksums, not security.
+
+**SHA-1** (160-bit) — Also considered insecure. Legacy use only.
+
+**SHA-256** (256-bit) — Part of SHA-2 family. Widely used and secure for most purposes.
+
+**SHA-512** (512-bit) — Strongest option. Recommended for password hashing and high-security applications.
+
+## Common Uses
+
+- **File integrity**: Verify downloads haven't been corrupted or tampered with
+- **Password storage**: Store hashes instead of plaintext passwords
+- **Data deduplication**: Identify duplicate files by comparing hashes
+- **Digital signatures**: Part of cryptographic signing processes
+
+## Important Notes
+
+**Hashing is one-way.** You cannot reverse a hash to get the original input. This is by design.
+
+**Hashes are deterministic.** The same input always produces the same output.
+
+**Different inputs can produce the same hash** (collision), but this is extremely rare with secure algorithms like SHA-256.
+
+## Don't Use For
+
+- **Encryption**: Hashing is not encryption. You cannot decrypt a hash.
+- **MD5/SHA-1 for security**: These algorithms have known vulnerabilities.
+
+## Privacy
+
+All hashing happens locally in your browser using the Web Crypto API. Your data never leaves your device.

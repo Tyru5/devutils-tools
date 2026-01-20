@@ -1,0 +1,58 @@
+---
+title: "JWT Decoder"
+description: "Decode and inspect JSON Web Tokens. View header, payload, and expiration."
+lastUpdated: 2025-01-18
+---
+
+## What is a JWT?
+
+A JSON Web Token (JWT) is a compact, URL-safe way to transmit information between parties. JWTs are commonly used for authentication and authorization in web applications.
+
+## JWT Structure
+
+A JWT consists of three parts separated by dots:
+
+```
+header.payload.signature
+```
+
+**Header**: Contains the token type and signing algorithm (e.g., HS256, RS256).
+
+**Payload**: Contains claims — statements about the user and additional metadata.
+
+**Signature**: Verifies the token hasn't been tampered with.
+
+## Common Claims
+
+| Claim | Name       | Description                     |
+| ----- | ---------- | ------------------------------- |
+| `iss` | Issuer     | Who created the token           |
+| `sub` | Subject    | Who the token is about          |
+| `aud` | Audience   | Who the token is intended for   |
+| `exp` | Expiration | When the token expires          |
+| `nbf` | Not Before | When the token becomes valid    |
+| `iat` | Issued At  | When the token was created      |
+| `jti` | JWT ID     | Unique identifier for the token |
+
+## Security Warning
+
+This tool **decodes** but does not **verify** JWTs. Anyone can decode a JWT — the signature verification is what provides security.
+
+**Never trust a JWT without verifying its signature on your server.**
+
+## Privacy
+
+All decoding happens locally in your browser. Your tokens are never sent to any server.
+
+## When to Use JWTs
+
+- Stateless authentication in APIs
+- Single Sign-On (SSO) between services
+- Securely transmitting information between parties
+- Short-lived access tokens
+
+## When NOT to Use JWTs
+
+- Storing sensitive data (JWTs are encoded, not encrypted)
+- Long-lived sessions (use server-side sessions instead)
+- Situations requiring immediate token revocation

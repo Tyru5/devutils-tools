@@ -1,0 +1,28 @@
+---
+import type { Tool } from "../../lib/tools";
+
+interface Props {
+  tools: Tool[];
+}
+
+const { tools } = Astro.props;
+---
+
+{
+  tools.length > 0 && (
+    <section class="mt-12 border-t border-gray-200 pt-8 dark:border-gray-700">
+      <h2 class="mb-4 text-lg font-semibold">Related Tools</h2>
+      <div class="flex flex-wrap gap-3">
+        {tools.map((tool) => (
+          <a
+            href={`/${tool.slug}`}
+            class="inline-flex items-center gap-2 rounded-md bg-gray-100 px-4 py-2 text-sm transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
+          >
+            <span>{tool.icon}</span>
+            <span>{tool.name}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )
+}
