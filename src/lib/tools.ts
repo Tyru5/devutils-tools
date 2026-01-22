@@ -119,6 +119,20 @@ export const tools: Tool[] = [
     category: "convert",
     icon: "🎨",
   },
+  {
+    slug: "markdown-preview",
+    name: "Markdown Preview",
+    description: "Live markdown editor with real-time preview. GFM supported.",
+    shortDescription: "Preview markdown",
+    keywords: [
+      "markdown editor",
+      "markdown preview",
+      "md to html",
+      "markdown renderer",
+    ],
+    category: "format",
+    icon: "M↓",
+  },
 ];
 
 export function getToolBySlug(slug: string): Tool | undefined {

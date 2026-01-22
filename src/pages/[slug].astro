@@ -14,6 +14,7 @@ import JwtDecoder from "../components/tools/JwtDecoder";
 import RegexTester from "../components/tools/RegexTester";
 import DiffChecker from "../components/tools/DiffChecker";
 import ColorConverter from "../components/tools/ColorConverter";
+import MarkdownPreview from "../components/tools/MarkdownPreview";
 
 export async function getStaticPaths() {
   const toolEntries = await getCollection("tools");
@@ -46,6 +47,7 @@ const slug = entry.slug;
     {slug === "regex-tester" && <RegexTester client:load />}
     {slug === "diff-checker" && <DiffChecker client:load />}
     {slug === "color-converter" && <ColorConverter client:load />}
+    {slug === "markdown-preview" && <MarkdownPreview client:load />}
   </Fragment>
   <Content />
 </ToolLayout>
