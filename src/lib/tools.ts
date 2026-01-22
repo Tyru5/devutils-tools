@@ -4,7 +4,13 @@ export interface Tool {
   description: string;
   shortDescription: string;
   keywords: string[];
-  category: "encode-decode" | "format" | "generate" | "convert" | "validate";
+  category:
+    | "encode-decode"
+    | "format"
+    | "generate"
+    | "convert"
+    | "validate"
+    | "security";
   icon: string;
 }
 
@@ -133,6 +139,122 @@ export const tools: Tool[] = [
     category: "format",
     icon: "M↓",
   },
+  {
+    slug: "lorem-ipsum",
+    name: "Lorem Ipsum Generator",
+    description:
+      "Generate placeholder text for designs and mockups. Configurable paragraphs, sentences, or words.",
+    shortDescription: "Generate placeholder text",
+    keywords: ["lorem ipsum", "placeholder text", "dummy text", "lipsum"],
+    category: "generate",
+    icon: "📝",
+  },
+  {
+    slug: "number-base",
+    name: "Number Base Converter",
+    description:
+      "Convert numbers between binary, decimal, hexadecimal, and octal. Supports large numbers.",
+    shortDescription: "Convert number bases",
+    keywords: [
+      "binary converter",
+      "hex to decimal",
+      "octal converter",
+      "base converter",
+    ],
+    category: "convert",
+    icon: "🔢",
+  },
+  {
+    slug: "text-case",
+    name: "Text Case Converter",
+    description:
+      "Convert text between camelCase, snake_case, kebab-case, PascalCase, CONSTANT_CASE, and more.",
+    shortDescription: "Convert text case",
+    keywords: [
+      "camelcase",
+      "snake case",
+      "kebab case",
+      "text case converter",
+      "slugify",
+    ],
+    category: "convert",
+    icon: "Aa",
+  },
+  {
+    slug: "password-generator",
+    name: "Password Generator",
+    description:
+      "Generate secure random passwords with configurable length and character sets. Includes strength meter.",
+    shortDescription: "Generate secure passwords",
+    keywords: [
+      "password generator",
+      "random password",
+      "secure password",
+      "strong password",
+    ],
+    category: "security",
+    icon: "🔐",
+  },
+  {
+    slug: "html-entities",
+    name: "HTML Entity Encoder/Decoder",
+    description:
+      "Encode special characters to HTML entities or decode entities back to characters.",
+    shortDescription: "Encode/decode HTML entities",
+    keywords: [
+      "html entities",
+      "html encode",
+      "html decode",
+      "special characters",
+    ],
+    category: "encode-decode",
+    icon: "&lt;",
+  },
+  {
+    slug: "backslash-escape",
+    name: "Backslash Escape/Unescape",
+    description:
+      "Escape or unescape special characters like newlines, tabs, and quotes for use in strings.",
+    shortDescription: "Escape/unescape strings",
+    keywords: [
+      "escape string",
+      "unescape string",
+      "backslash escape",
+      "string escape",
+    ],
+    category: "encode-decode",
+    icon: "\\\\",
+  },
+  {
+    slug: "chmod-calculator",
+    name: "chmod Calculator",
+    description:
+      "Convert between symbolic (rwxr-xr-x) and numeric (755) Unix file permissions.",
+    shortDescription: "Calculate file permissions",
+    keywords: [
+      "chmod calculator",
+      "file permissions",
+      "unix permissions",
+      "rwx to number",
+    ],
+    category: "convert",
+    icon: "🔒",
+  },
+  {
+    slug: "epoch-batch",
+    name: "Epoch Batch Converter",
+    description:
+      "Convert multiple Unix timestamps at once. Paste a list and get human-readable dates.",
+    shortDescription: "Batch convert timestamps",
+    keywords: [
+      "batch timestamp",
+      "multiple timestamps",
+      "epoch batch",
+      "bulk timestamp converter",
+    ],
+    category: "convert",
+    icon: "📅",
+  },
 ];
 
 export function getToolBySlug(slug: string): Tool | undefined {
@@ -154,4 +276,5 @@ export const categoryNames: Record<Tool["category"], string> = {
   generate: "Generate",
   convert: "Convert",
   validate: "Validate & Compare",
+  security: "Security & Crypto",
 };
