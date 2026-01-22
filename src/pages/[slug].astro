@@ -29,6 +29,10 @@ import TomlJsonConverter from "../components/tools/TomlJsonConverter";
 import CronParser from "../components/tools/CronParser";
 import JsonPathTester from "../components/tools/JsonPathTester";
 import UnicodeInspector from "../components/tools/UnicodeInspector";
+import SqlFormatter from "../components/tools/SqlFormatter";
+import HtmlFormatter from "../components/tools/HtmlFormatter";
+import SvgOptimizer from "../components/tools/SvgOptimizer";
+import OpenApiViewer from "../components/tools/OpenApiViewer";
 
 export async function getStaticPaths() {
   const toolEntries = await getCollection("tools");
@@ -76,6 +80,10 @@ const slug = entry.slug;
     {slug === "cron-parser" && <CronParser client:load />}
     {slug === "jsonpath-tester" && <JsonPathTester client:load />}
     {slug === "unicode-inspector" && <UnicodeInspector client:load />}
+    {slug === "sql-formatter" && <SqlFormatter client:idle />}
+    {slug === "html-formatter" && <HtmlFormatter client:idle />}
+    {slug === "svg-optimizer" && <SvgOptimizer client:idle />}
+    {slug === "openapi-viewer" && <OpenApiViewer client:idle />}
   </Fragment>
   <Content />
 </ToolLayout>

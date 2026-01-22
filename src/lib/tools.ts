@@ -320,6 +320,61 @@ export const tools: Tool[] = [
     category: "validate",
     icon: "🔤",
   },
+  {
+    slug: "sql-formatter",
+    name: "SQL Formatter",
+    description:
+      "Format and beautify SQL queries. Supports PostgreSQL, MySQL, SQLite, SQL Server, and more.",
+    shortDescription: "Format SQL queries",
+    keywords: [
+      "sql formatter",
+      "sql beautifier",
+      "format sql",
+      "sql pretty print",
+    ],
+    category: "format",
+    icon: "🗃️",
+  },
+  {
+    slug: "html-formatter",
+    name: "HTML/XML Formatter",
+    description:
+      "Format and beautify HTML and XML code with customizable indentation.",
+    shortDescription: "Format HTML & XML",
+    keywords: [
+      "html formatter",
+      "xml formatter",
+      "html beautifier",
+      "prettify html",
+    ],
+    category: "format",
+    icon: "📐",
+  },
+  {
+    slug: "svg-optimizer",
+    name: "SVG Optimizer",
+    description:
+      "Optimize and minify SVG files. Remove unnecessary data and reduce file size.",
+    shortDescription: "Optimize SVG files",
+    keywords: ["svg optimizer", "svgo", "minify svg", "compress svg"],
+    category: "format",
+    icon: "🖼️",
+  },
+  {
+    slug: "openapi-viewer",
+    name: "OpenAPI Viewer",
+    description:
+      "View and explore OpenAPI/Swagger specifications. Parse and display API endpoints.",
+    shortDescription: "View OpenAPI specs",
+    keywords: [
+      "openapi viewer",
+      "swagger viewer",
+      "api documentation",
+      "openapi parser",
+    ],
+    category: "format",
+    icon: "📋",
+  },
 ];
 
 export function getToolBySlug(slug: string): Tool | undefined {
