@@ -4,7 +4,6 @@ import CopyButton from "./shared/CopyButton";
 
 type HashAlgorithm = "MD5" | "SHA-1" | "SHA-256" | "SHA-512";
 
-// MD5 implementation (Web Crypto doesn't support MD5)
 function md5(string: string): string {
   function md5cycle(x: number[], k: number[]) {
     let a = x[0],
@@ -196,7 +195,6 @@ function md5(string: string): string {
     return (a + b) & 0xffffffff;
   }
 
-  // Handle UTF-8
   const utf8 = unescape(encodeURIComponent(string));
   return hex(md51(utf8));
 }
@@ -224,10 +222,8 @@ export default function HashGenerator() {
       const encoder = new TextEncoder();
       const data = encoder.encode(input);
 
-      // Generate MD5 (synchronous, custom implementation)
       const md5Hash = md5(input);
 
-      // Generate SHA hashes using Web Crypto API
       const [sha1, sha256, sha512] = await Promise.all([
         crypto.subtle.digest("SHA-1", data),
         crypto.subtle.digest("SHA-256", data),
@@ -264,7 +260,6 @@ export default function HashGenerator() {
 
   return (
     <div className="space-y-4">
-      {/* Input */}
       <Textarea
         value={input}
         onChange={setInput}
@@ -273,12 +268,11 @@ export default function HashGenerator() {
         rows={6}
       />
 
-      {/* Controls */}
       <div className="flex flex-wrap items-center gap-4">
         <button
           onClick={generateHashes}
           disabled={isLoading}
-          className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+          className="btn btn-primary disabled:opacity-50"
         >
           {isLoading ? "Generating..." : "Generate Hashes"}
         </button>
@@ -288,22 +282,18 @@ export default function HashGenerator() {
             type="checkbox"
             checked={uppercase}
             onChange={(e) => setUppercase(e.target.checked)}
-            className="rounded border-gray-300 dark:border-gray-600"
+            className="rounded border-neutral-300 dark:border-neutral-700"
           />
-          <span className="text-sm text-gray-700 dark:text-gray-300">
+          <span className="text-sm text-neutral-600 dark:text-neutral-400">
             Uppercase
           </span>
         </label>
 
-        <button
-          onClick={clear}
-          className="px-4 py-2 text-gray-600 transition-colors hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-        >
+        <button onClick={clear} className="btn btn-ghost">
           Clear
         </button>
       </div>
 
-      {/* Results */}
       {Object.entries(hashes).some(([_, hash]) => hash) && (
         <div className="space-y-3">
           {(Object.entries(hashes) as [HashAlgorithm, string][]).map(
@@ -311,15 +301,15 @@ export default function HashGenerator() {
               hash && (
                 <div
                   key={algo}
-                  className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800"
+                  className="rounded-md border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900"
                 >
                   <div className="mb-2 flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-xs font-medium uppercase tracking-widest text-neutral-400">
                       {algo}
                     </span>
                     <CopyButton text={formatHash(hash)} />
                   </div>
-                  <code className="block break-all font-mono text-sm text-gray-900 dark:text-gray-100">
+                  <code className="block break-all font-mono text-sm text-neutral-900 dark:text-neutral-100">
                     {formatHash(hash)}
                   </code>
                 </div>
@@ -328,8 +318,7 @@ export default function HashGenerator() {
         </div>
       )}
 
-      {/* Info */}
-      <div className="space-y-1 text-xs text-gray-500 dark:text-gray-400">
+      <div className="space-y-1 text-xs text-neutral-500">
         <p>
           <strong>MD5:</strong> 128-bit (32 chars) — Fast but not
           cryptographically secure.

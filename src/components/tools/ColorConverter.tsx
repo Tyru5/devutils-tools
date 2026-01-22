@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import CopyButton from "./shared/CopyButton";
 
 interface RGB {
@@ -13,11 +13,9 @@ interface HSL {
   l: number;
 }
 
-// Conversion functions
 function hexToRgb(hex: string): RGB | null {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (!result) {
-    // Try 3-digit hex
     const short = /^#?([a-f\d])([a-f\d])([a-f\d])$/i.exec(hex);
     if (short) {
       return {
@@ -116,12 +114,11 @@ function hslToRgb(h: number, s: number, l: number): RGB {
 }
 
 export default function ColorConverter() {
-  const [hex, setHex] = useState("#3b82f6");
-  const [rgb, setRgb] = useState<RGB>({ r: 59, g: 130, b: 246 });
-  const [hsl, setHsl] = useState<HSL>({ h: 217, s: 91, l: 60 });
+  const [hex, setHex] = useState("#4A7C6F");
+  const [rgb, setRgb] = useState<RGB>({ r: 74, g: 124, b: 111 });
+  const [hsl, setHsl] = useState<HSL>({ h: 162, s: 25, l: 39 });
   const [error, setError] = useState<string | null>(null);
 
-  // Update all values when hex changes
   const updateFromHex = (value: string) => {
     setHex(value);
     const parsed = hexToRgb(value);
@@ -134,7 +131,6 @@ export default function ColorConverter() {
     }
   };
 
-  // Update all values when RGB changes
   const updateFromRgb = (r: number, g: number, b: number) => {
     setRgb({ r, g, b });
     setHex(rgbToHex(r, g, b));
@@ -142,7 +138,6 @@ export default function ColorConverter() {
     setError(null);
   };
 
-  // Update all values when HSL changes
   const updateFromHsl = (h: number, s: number, l: number) => {
     setHsl({ h, s, l });
     const newRgb = hslToRgb(h, s, l);
@@ -155,7 +150,6 @@ export default function ColorConverter() {
   const rgbValue = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
   const hslValue = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
 
-  // Random color
   const randomColor = () => {
     const r = Math.floor(Math.random() * 256);
     const g = Math.floor(Math.random() * 256);
@@ -165,10 +159,9 @@ export default function ColorConverter() {
 
   return (
     <div className="space-y-6">
-      {/* Color Preview */}
       <div className="flex items-center gap-4">
         <div
-          className="h-24 w-24 rounded-lg border border-gray-200 shadow-inner dark:border-gray-700"
+          className="size-24 rounded-md border border-neutral-200 dark:border-neutral-800"
           style={{ backgroundColor: hexValue }}
         />
         <div className="flex-1">
@@ -176,28 +169,23 @@ export default function ColorConverter() {
             type="color"
             value={hexValue}
             onChange={(e) => updateFromHex(e.target.value)}
-            className="h-12 w-full cursor-pointer rounded"
+            className="h-12 w-full cursor-pointer rounded-md"
           />
-          <button
-            onClick={randomColor}
-            className="mt-2 rounded-md bg-gray-200 px-3 py-1 text-sm transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-          >
-            🎲 Random
+          <button onClick={randomColor} className="btn btn-secondary mt-2">
+            Random
           </button>
         </div>
       </div>
 
-      {/* Error */}
       {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
           {error}
         </div>
       )}
 
-      {/* HEX Input */}
-      <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+      <div className="rounded-md border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mb-2 flex items-center justify-between">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className="text-xs font-medium uppercase tracking-widest text-neutral-400">
             HEX
           </label>
           <CopyButton text={hexValue} />
@@ -207,23 +195,20 @@ export default function ColorConverter() {
           value={hex}
           onChange={(e) => updateFromHex(e.target.value)}
           placeholder="#000000"
-          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
+          className="input font-mono"
         />
       </div>
 
-      {/* RGB Input */}
-      <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+      <div className="rounded-md border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mb-2 flex items-center justify-between">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className="text-xs font-medium uppercase tracking-widest text-neutral-400">
             RGB
           </label>
           <CopyButton text={rgbValue} />
         </div>
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="text-xs text-gray-500 dark:text-gray-400">
-              R
-            </label>
+            <label className="text-xs text-neutral-500">R</label>
             <input
               type="number"
               min={0}
@@ -232,7 +217,7 @@ export default function ColorConverter() {
               onChange={(e) =>
                 updateFromRgb(parseInt(e.target.value) || 0, rgb.g, rgb.b)
               }
-              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
+              className="input font-mono"
             />
             <input
               type="range"
@@ -246,9 +231,7 @@ export default function ColorConverter() {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-500 dark:text-gray-400">
-              G
-            </label>
+            <label className="text-xs text-neutral-500">G</label>
             <input
               type="number"
               min={0}
@@ -257,7 +240,7 @@ export default function ColorConverter() {
               onChange={(e) =>
                 updateFromRgb(rgb.r, parseInt(e.target.value) || 0, rgb.b)
               }
-              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
+              className="input font-mono"
             />
             <input
               type="range"
@@ -271,9 +254,7 @@ export default function ColorConverter() {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-500 dark:text-gray-400">
-              B
-            </label>
+            <label className="text-xs text-neutral-500">B</label>
             <input
               type="number"
               min={0}
@@ -282,7 +263,7 @@ export default function ColorConverter() {
               onChange={(e) =>
                 updateFromRgb(rgb.r, rgb.g, parseInt(e.target.value) || 0)
               }
-              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
+              className="input font-mono"
             />
             <input
               type="range"
@@ -298,19 +279,16 @@ export default function ColorConverter() {
         </div>
       </div>
 
-      {/* HSL Input */}
-      <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+      <div className="rounded-md border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mb-2 flex items-center justify-between">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className="text-xs font-medium uppercase tracking-widest text-neutral-400">
             HSL
           </label>
           <CopyButton text={hslValue} />
         </div>
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="text-xs text-gray-500 dark:text-gray-400">
-              H (°)
-            </label>
+            <label className="text-xs text-neutral-500">H (°)</label>
             <input
               type="number"
               min={0}
@@ -319,7 +297,7 @@ export default function ColorConverter() {
               onChange={(e) =>
                 updateFromHsl(parseInt(e.target.value) || 0, hsl.s, hsl.l)
               }
-              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
+              className="input font-mono"
             />
             <input
               type="range"
@@ -331,21 +309,19 @@ export default function ColorConverter() {
               }
               className="mt-1 w-full"
               style={{
-                background: `linear-gradient(to right, 
-                  hsl(0, 100%, 50%), 
-                  hsl(60, 100%, 50%), 
-                  hsl(120, 100%, 50%), 
-                  hsl(180, 100%, 50%), 
-                  hsl(240, 100%, 50%), 
-                  hsl(300, 100%, 50%), 
+                background: `linear-gradient(to right,
+                  hsl(0, 100%, 50%),
+                  hsl(60, 100%, 50%),
+                  hsl(120, 100%, 50%),
+                  hsl(180, 100%, 50%),
+                  hsl(240, 100%, 50%),
+                  hsl(300, 100%, 50%),
                   hsl(360, 100%, 50%))`,
               }}
             />
           </div>
           <div>
-            <label className="text-xs text-gray-500 dark:text-gray-400">
-              S (%)
-            </label>
+            <label className="text-xs text-neutral-500">S (%)</label>
             <input
               type="number"
               min={0}
@@ -354,7 +330,7 @@ export default function ColorConverter() {
               onChange={(e) =>
                 updateFromHsl(hsl.h, parseInt(e.target.value) || 0, hsl.l)
               }
-              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
+              className="input font-mono"
             />
             <input
               type="range"
@@ -368,9 +344,7 @@ export default function ColorConverter() {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-500 dark:text-gray-400">
-              L (%)
-            </label>
+            <label className="text-xs text-neutral-500">L (%)</label>
             <input
               type="number"
               min={0}
@@ -379,7 +353,7 @@ export default function ColorConverter() {
               onChange={(e) =>
                 updateFromHsl(hsl.h, hsl.s, parseInt(e.target.value) || 0)
               }
-              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
+              className="input font-mono"
             />
             <input
               type="range"
@@ -395,16 +369,21 @@ export default function ColorConverter() {
         </div>
       </div>
 
-      {/* CSS Output */}
       <div className="grid grid-cols-1 gap-2 text-sm md:grid-cols-3">
-        <div className="flex items-center justify-between rounded bg-gray-100 px-3 py-2 dark:bg-gray-800">
-          <code>{hexValue}</code>
+        <div className="flex items-center justify-between rounded-md border border-neutral-200 bg-white px-3 py-2 dark:border-neutral-800 dark:bg-neutral-900">
+          <code className="text-neutral-900 dark:text-neutral-100">
+            {hexValue}
+          </code>
         </div>
-        <div className="flex items-center justify-between rounded bg-gray-100 px-3 py-2 dark:bg-gray-800">
-          <code>{rgbValue}</code>
+        <div className="flex items-center justify-between rounded-md border border-neutral-200 bg-white px-3 py-2 dark:border-neutral-800 dark:bg-neutral-900">
+          <code className="text-neutral-900 dark:text-neutral-100">
+            {rgbValue}
+          </code>
         </div>
-        <div className="flex items-center justify-between rounded bg-gray-100 px-3 py-2 dark:bg-gray-800">
-          <code>{hslValue}</code>
+        <div className="flex items-center justify-between rounded-md border border-neutral-200 bg-white px-3 py-2 dark:border-neutral-800 dark:bg-neutral-900">
+          <code className="text-neutral-900 dark:text-neutral-100">
+            {hslValue}
+          </code>
         </div>
       </div>
     </div>

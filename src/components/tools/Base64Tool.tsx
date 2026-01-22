@@ -19,11 +19,9 @@ export default function Base64Tool() {
 
     try {
       if (mode === "encode") {
-        // Handle UTF-8 encoding properly
         const encoded = btoa(unescape(encodeURIComponent(input)));
         setOutput(encoded);
       } else {
-        // Handle UTF-8 decoding properly
         const decoded = decodeURIComponent(escape(atob(input.trim())));
         setOutput(decoded);
       }
@@ -49,31 +47,29 @@ export default function Base64Tool() {
 
   return (
     <div className="space-y-4">
-      {/* Mode Toggle */}
       <div className="flex items-center gap-2">
         <button
           onClick={() => setMode("encode")}
-          className={`rounded-md px-4 py-2 font-medium transition-colors ${
+          className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
             mode === "encode"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+              ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
+              : "text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
           }`}
         >
           Encode
         </button>
         <button
           onClick={() => setMode("decode")}
-          className={`rounded-md px-4 py-2 font-medium transition-colors ${
+          className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
             mode === "decode"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+              ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
+              : "text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
           }`}
         >
           Decode
         </button>
       </div>
 
-      {/* Input/Output */}
       <div className="grid gap-4 md:grid-cols-2">
         <Textarea
           value={input}
@@ -88,7 +84,7 @@ export default function Base64Tool() {
           }
           label={mode === "encode" ? "Text" : "Base64"}
           rows={10}
-          className={error ? "border-red-500" : ""}
+          className={error ? "border-red-500 dark:border-red-500" : ""}
         />
         <Textarea
           value={output}
@@ -101,33 +97,25 @@ export default function Base64Tool() {
         />
       </div>
 
-      {/* Error */}
       {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
-          <strong>Error:</strong> {error}
+        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
+          {error}
         </div>
       )}
 
-      {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
-        <button
-          onClick={handleConvert}
-          className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
-        >
+        <button onClick={handleConvert} className="btn btn-primary">
           {mode === "encode" ? "Encode" : "Decode"}
         </button>
         <button
           onClick={handleSwap}
           disabled={!output}
-          className="rounded-md bg-gray-200 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+          className="btn btn-secondary disabled:cursor-not-allowed disabled:opacity-40"
         >
-          ⇄ Swap
+          Swap
         </button>
         <CopyButton text={output} disabled={!output} />
-        <button
-          onClick={clear}
-          className="px-4 py-2 text-gray-600 transition-colors hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-        >
+        <button onClick={clear} className="btn btn-ghost">
           Clear
         </button>
       </div>

@@ -29,15 +29,15 @@ export default function CopyButton({
     <button
       onClick={handleCopy}
       disabled={disabled}
-      className={`rounded-md px-4 py-2 font-medium transition-colors ${
+      className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
         disabled
-          ? "cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-gray-700"
+          ? "cursor-not-allowed text-neutral-300 dark:text-neutral-700"
           : copied
-            ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
-            : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-      } ${className} `}
+            ? "text-neutral-900 dark:text-neutral-100"
+            : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-500 dark:hover:text-neutral-100"
+      } ${className}`}
     >
-      {copied ? "✓ Copied!" : "Copy"}
+      {copied ? "Copied" : "Copy"}
     </button>
   );
 }

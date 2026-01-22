@@ -4,33 +4,34 @@ import { tools } from "../../lib/tools";
 ---
 
 <header
-  class="border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
+  class="sticky top-0 z-50 border-b border-neutral-200 bg-white/80 backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950/80"
 >
-  <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-    <a href="/" class="flex items-center gap-2 text-xl font-bold">
-      <span class="text-blue-600">🛠️</span>
-      <span>DevUtils</span>
+  <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
+    <a
+      href="/"
+      class="flex items-center gap-2 text-sm font-semibold tracking-tight text-neutral-900 dark:text-neutral-100"
+    >
+      <span class="text-base">/</span>
+      <span>devutils</span>
     </a>
 
-    <div class="flex items-center gap-4">
-      <!-- Tool Dropdown -->
+    <nav class="flex items-center gap-1">
       <div class="group relative">
         <button
-          class="text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+          class="px-3 py-2 text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
         >
-          Tools ▾
+          Tools
         </button>
         <div
-          class="invisible absolute right-0 top-full z-50 mt-2 w-64 rounded-lg border border-gray-200 bg-white opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100 dark:border-gray-700 dark:bg-gray-800"
+          class="invisible absolute right-0 top-full mt-1 w-56 rounded-md border border-neutral-200 bg-white opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100 dark:border-neutral-800 dark:bg-neutral-950"
         >
-          <div class="max-h-80 overflow-y-auto p-2">
+          <div class="max-h-80 overflow-y-auto py-1">
             {
               tools.map((tool) => (
                 <a
                   href={`/${tool.slug}`}
-                  class="block rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                  class="block px-3 py-2 text-sm text-neutral-600 transition-colors hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-neutral-100"
                 >
-                  <span class="mr-2">{tool.icon}</span>
                   {tool.name}
                 </a>
               ))
@@ -39,7 +40,16 @@ import { tools } from "../../lib/tools";
         </div>
       </div>
 
+      <a
+        href="https://github.com/Tyru5/devutils-tools"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="px-3 py-2 text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+      >
+        GitHub
+      </a>
+
       <ThemeToggle />
-    </div>
+    </nav>
   </div>
 </header>

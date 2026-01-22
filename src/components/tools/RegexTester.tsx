@@ -52,7 +52,6 @@ export default function RegexTester() {
             index: match.index,
             groups: match.groups,
           });
-          // Prevent infinite loop on zero-length matches
           if (match[0].length === 0) {
             regex.lastIndex++;
           }
@@ -68,11 +67,9 @@ export default function RegexTester() {
         }
       }
 
-      // Build highlighted text
       let highlighted = "";
       let lastIndex = 0;
 
-      // Need to re-execute for highlighting since we consumed the iterator
       const highlightRegex = new RegExp(pattern, flags);
       const allMatches: { start: number; end: number }[] = [];
 
@@ -91,7 +88,7 @@ export default function RegexTester() {
 
       for (const { start, end } of allMatches) {
         highlighted += escapeHtml(testString.slice(lastIndex, start));
-        highlighted += `<mark class="bg-yellow-300 dark:bg-yellow-600 px-0.5 rounded">${escapeHtml(testString.slice(start, end))}</mark>`;
+        highlighted += `<mark class="bg-yellow-200 dark:bg-yellow-800 px-0.5 rounded">${escapeHtml(testString.slice(start, end))}</mark>`;
         lastIndex = end;
       }
       highlighted += escapeHtml(testString.slice(lastIndex));
@@ -111,34 +108,32 @@ export default function RegexTester() {
 
   return (
     <div className="space-y-4">
-      {/* Pattern Input */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label className="mb-2 block text-xs font-medium uppercase tracking-widest text-neutral-400">
           Regular Expression
         </label>
         <div className="flex items-center gap-2">
-          <span className="font-mono text-gray-400">/</span>
+          <span className="font-mono text-neutral-400">/</span>
           <input
             type="text"
             value={pattern}
             onChange={(e) => setPattern(e.target.value)}
             placeholder="Enter regex pattern..."
-            className={`flex-1 rounded-md border bg-white px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 ${
-              error ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+            className={`input flex-1 font-mono ${
+              error ? "border-red-500 dark:border-red-500" : ""
             }`}
           />
-          <span className="font-mono text-gray-400">/</span>
+          <span className="font-mono text-neutral-400">/</span>
           <input
             type="text"
             value={flags}
             onChange={(e) => setFlags(e.target.value.toLowerCase())}
-            className="w-16 rounded-md border border-gray-300 bg-white px-2 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
+            className="input w-16 font-mono"
             placeholder="gi"
           />
         </div>
       </div>
 
-      {/* Flags */}
       <div className="flex flex-wrap gap-2">
         {flagOptions.map(({ flag, label, description }) => (
           <button
@@ -146,8 +141,8 @@ export default function RegexTester() {
             onClick={() => toggleFlag(flag)}
             className={`rounded-md px-3 py-1 text-sm transition-colors ${
               flags.includes(flag)
-                ? "bg-blue-100 text-blue-700 ring-1 ring-blue-300 dark:bg-blue-900 dark:text-blue-300 dark:ring-blue-700"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+                ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
+                : "text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
             }`}
             title={description}
           >
@@ -156,14 +151,12 @@ export default function RegexTester() {
         ))}
       </div>
 
-      {/* Error */}
       {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
-          <strong>Error:</strong> {error}
+        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
+          {error}
         </div>
       )}
 
-      {/* Test String */}
       <Textarea
         value={testString}
         onChange={setTestString}
@@ -172,43 +165,39 @@ export default function RegexTester() {
         rows={6}
       />
 
-      {/* Highlighted Preview */}
       {testString && pattern && !error && (
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className="mb-2 block text-xs font-medium uppercase tracking-widest text-neutral-400">
             Matches Highlighted
           </label>
           <div
-            className="min-h-[100px] w-full whitespace-pre-wrap break-all rounded-md border border-gray-300 bg-gray-50 px-3 py-2 font-mono text-sm dark:border-gray-600 dark:bg-gray-900"
+            className="min-h-[100px] w-full whitespace-pre-wrap break-all rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2.5 font-mono text-sm dark:border-neutral-800 dark:bg-neutral-900"
             dangerouslySetInnerHTML={{ __html: highlightedText }}
           />
         </div>
       )}
 
-      {/* Match Results */}
       {matches.length > 0 && (
-        <div className="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
-          <div className="mb-3 text-sm font-medium text-green-800 dark:text-green-300">
+        <div className="rounded-md border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900">
+          <div className="mb-3 text-xs font-medium uppercase tracking-widest text-neutral-400">
             {matches.length} match{matches.length !== 1 ? "es" : ""} found
           </div>
           <div className="max-h-60 space-y-2 overflow-y-auto">
             {matches.map((match, i) => (
               <div
                 key={i}
-                className="flex items-start gap-4 rounded bg-white p-2 text-sm dark:bg-gray-800"
+                className="flex items-start gap-4 rounded bg-white p-2 text-sm dark:bg-neutral-800"
               >
-                <span className="w-8 text-gray-500 dark:text-gray-400">
-                  #{i + 1}
-                </span>
+                <span className="w-8 text-neutral-400">#{i + 1}</span>
                 <div className="flex-1">
-                  <code className="break-all text-green-700 dark:text-green-400">
+                  <code className="break-all text-neutral-900 dark:text-neutral-100">
                     "{match.value}"
                   </code>
-                  <span className="ml-2 text-gray-400">
+                  <span className="ml-2 text-neutral-500">
                     at index {match.index}
                   </span>
                   {match.groups && Object.keys(match.groups).length > 0 && (
-                    <div className="mt-1 text-xs text-gray-500">
+                    <div className="mt-1 text-xs text-neutral-500">
                       Groups: {JSON.stringify(match.groups)}
                     </div>
                   )}
@@ -219,29 +208,23 @@ export default function RegexTester() {
         </div>
       )}
 
-      {/* No matches */}
       {testString && pattern && !error && matches.length === 0 && (
-        <div className="rounded-lg border border-gray-200 bg-gray-100 p-4 text-center text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
+        <div className="rounded-md border border-neutral-200 bg-neutral-50 p-4 text-center text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900">
           No matches found
         </div>
       )}
 
-      {/* Controls */}
       <div className="flex items-center gap-3">
-        <button
-          onClick={clear}
-          className="px-4 py-2 text-gray-600 transition-colors hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-        >
+        <button onClick={clear} className="btn btn-ghost">
           Clear
         </button>
       </div>
 
-      {/* Cheat Sheet */}
       <details className="text-sm">
-        <summary className="cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+        <summary className="cursor-pointer text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100">
           Quick Reference
         </summary>
-        <div className="mt-2 grid grid-cols-2 gap-2 rounded-lg bg-gray-50 p-3 text-xs dark:bg-gray-800 md:grid-cols-4">
+        <div className="mt-2 grid grid-cols-2 gap-2 rounded-md bg-neutral-50 p-3 text-xs dark:bg-neutral-900 md:grid-cols-4">
           <div>
             <code>.</code> Any character
           </div>
