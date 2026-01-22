@@ -8,4 +8,9 @@ export default defineConfig({
   site: "https://devutils.tools",
   integrations: [react(), tailwind(), mdx(), sitemap()],
   output: "static",
+  vite: {
+    server: {
+      allowedHosts: [".ngrok-free.app"],
+    },
+  },
 });

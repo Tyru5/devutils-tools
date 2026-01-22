@@ -2,6 +2,7 @@
 import Header from "../components/ui/Header.astro";
 import Footer from "../components/ui/Footer.astro";
 import ToolGrid from "../components/ui/ToolGrid.astro";
+import CommandPaletteWrapper from "../components/ui/CommandPaletteWrapper";
 import { tools, categoryNames } from "../lib/tools";
 import "../styles/global.css";
 
@@ -48,6 +49,7 @@ const categories = [
   <body
     class="flex min-h-dvh flex-col overflow-x-clip bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100"
   >
+    <CommandPaletteWrapper client:load />
     <div class="guidelines" aria-hidden="true"></div>
 
     <!-- Top-left diagonal lines -->
