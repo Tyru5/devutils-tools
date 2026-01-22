@@ -1,0 +1,54 @@
+---
+title: "JSONPath Tester"
+description: "Test JSONPath expressions against JSON data."
+lastUpdated: 2025-01-22
+---
+
+## What is JSONPath?
+
+JSONPath is a query language for JSON, similar to XPath for XML. It allows you to extract specific values from complex JSON structures using path expressions.
+
+## How to use this tool
+
+1. Paste or type your JSON data
+2. Enter a JSONPath expression
+3. Click **Query** to see results
+4. Results show all matching values
+
+## JSONPath syntax
+
+| Expression    | Description                  |
+| ------------- | ---------------------------- |
+| `$`           | Root object                  |
+| `.` or `[]`   | Child operator               |
+| `..`          | Recursive descent            |
+| `*`           | Wildcard (all elements)      |
+| `[n]`         | Array index                  |
+| `[start:end]` | Array slice                  |
+| `[?()]`       | Filter expression            |
+| `@`           | Current element (in filters) |
+
+## Examples
+
+| Path                                     | Description             |
+| ---------------------------------------- | ----------------------- |
+| `$.store.books`                          | All books               |
+| `$.store.books[0]`                       | First book              |
+| `$.store.books[*].title`                 | All book titles         |
+| `$..author`                              | All authors (any depth) |
+| `$.store.books[?(@.price < 10)]`         | Books under $10         |
+| `$.store.books[?(@.author == 'Orwell')]` | Books by Orwell         |
+
+## Filter operators
+
+| Operator   | Description           |
+| ---------- | --------------------- |
+| `==`       | Equal                 |
+| `!=`       | Not equal             |
+| `<`, `>`   | Less/greater than     |
+| `<=`, `>=` | Less/greater or equal |
+| `=~`       | Regex match           |
+
+## Privacy
+
+All queries happen in your browser. Your JSON data never leaves your device.

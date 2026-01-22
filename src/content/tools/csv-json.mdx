@@ -1,0 +1,51 @@
+---
+title: "CSV ↔ JSON Converter"
+description: "Convert between CSV and JSON formats with support for custom delimiters."
+lastUpdated: 2025-01-22
+---
+
+## How to use this tool
+
+1. Select conversion direction: **CSV → JSON** or **JSON → CSV**
+2. Choose delimiter (comma, semicolon, tab, or pipe)
+3. For CSV input, specify if the first row contains headers
+4. Paste your data and click **Convert**
+
+## Delimiter options
+
+| Delimiter     | Common use                      |
+| ------------- | ------------------------------- |
+| Comma (,)     | Standard CSV files              |
+| Semicolon (;) | European locales, Excel exports |
+| Tab           | TSV files, spreadsheet data     |
+| Pipe (\|)     | Data with commas in fields      |
+
+## CSV to JSON output
+
+When converting CSV to JSON:
+
+**With headers**: Creates an array of objects using header names as keys
+
+```json
+[
+  { "name": "John", "age": "30" },
+  { "name": "Jane", "age": "25" }
+]
+```
+
+**Without headers**: Creates an array of arrays
+
+```json
+[
+  ["John", "30"],
+  ["Jane", "25"]
+]
+```
+
+## JSON to CSV requirements
+
+The JSON input must be an array of objects with consistent keys. The first object's keys become the CSV headers.
+
+## Privacy
+
+All conversions happen in your browser. Your data never leaves your device.

@@ -1,0 +1,51 @@
+---
+title: "Cron Expression Parser"
+description: "Parse cron expressions and see next scheduled run times."
+lastUpdated: 2025-01-22
+---
+
+## What is a cron expression?
+
+A cron expression is a string of five fields that define a schedule. Cron is used in Unix-like systems for scheduling recurring tasks.
+
+## How to use this tool
+
+1. Enter a cron expression (5 fields)
+2. The tool parses it in real-time
+3. See the human-readable description
+4. View the next 5 scheduled run times
+
+## Cron expression format
+
+```
+┌───────────── minute (0-59)
+│ ┌───────────── hour (0-23)
+│ │ ┌───────────── day of month (1-31)
+│ │ │ ┌───────────── month (1-12)
+│ │ │ │ ┌───────────── day of week (0-6, Sunday=0)
+│ │ │ │ │
+* * * * *
+```
+
+## Special characters
+
+| Character | Meaning   | Example                          |
+| --------- | --------- | -------------------------------- |
+| `*`       | Any value | `* * * * *` (every minute)       |
+| `,`       | List      | `1,15 * * * *` (minute 1 and 15) |
+| `-`       | Range     | `1-5 * * * *` (minutes 1-5)      |
+| `/`       | Step      | `*/5 * * * *` (every 5 minutes)  |
+
+## Common expressions
+
+| Expression       | Description                    |
+| ---------------- | ------------------------------ |
+| `0 0 * * *`      | Every day at midnight          |
+| `0 */2 * * *`    | Every 2 hours                  |
+| `0 9-17 * * 1-5` | Every hour 9am-5pm on weekdays |
+| `0 0 1 * *`      | First day of every month       |
+| `*/15 * * * *`   | Every 15 minutes               |
+
+## Privacy
+
+All parsing happens in your browser. Your expressions never leave your device.

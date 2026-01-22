@@ -23,6 +23,12 @@ import HtmlEntities from "../components/tools/HtmlEntities";
 import BackslashEscape from "../components/tools/BackslashEscape";
 import ChmodCalculator from "../components/tools/ChmodCalculator";
 import EpochBatchConverter from "../components/tools/EpochBatchConverter";
+import YamlJsonConverter from "../components/tools/YamlJsonConverter";
+import CsvJsonConverter from "../components/tools/CsvJsonConverter";
+import TomlJsonConverter from "../components/tools/TomlJsonConverter";
+import CronParser from "../components/tools/CronParser";
+import JsonPathTester from "../components/tools/JsonPathTester";
+import UnicodeInspector from "../components/tools/UnicodeInspector";
 
 export async function getStaticPaths() {
   const toolEntries = await getCollection("tools");
@@ -64,6 +70,12 @@ const slug = entry.slug;
     {slug === "backslash-escape" && <BackslashEscape client:load />}
     {slug === "chmod-calculator" && <ChmodCalculator client:load />}
     {slug === "epoch-batch" && <EpochBatchConverter client:load />}
+    {slug === "yaml-json" && <YamlJsonConverter client:load />}
+    {slug === "csv-json" && <CsvJsonConverter client:load />}
+    {slug === "toml-json" && <TomlJsonConverter client:load />}
+    {slug === "cron-parser" && <CronParser client:load />}
+    {slug === "jsonpath-tester" && <JsonPathTester client:load />}
+    {slug === "unicode-inspector" && <UnicodeInspector client:load />}
   </Fragment>
   <Content />
 </ToolLayout>

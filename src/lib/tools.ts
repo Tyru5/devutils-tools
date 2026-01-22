@@ -255,6 +255,71 @@ export const tools: Tool[] = [
     category: "convert",
     icon: "📅",
   },
+  {
+    slug: "yaml-json",
+    name: "YAML ↔ JSON Converter",
+    description:
+      "Convert between YAML and JSON formats. Perfect for Kubernetes configs and CI/CD pipelines.",
+    shortDescription: "Convert YAML & JSON",
+    keywords: [
+      "yaml to json",
+      "json to yaml",
+      "yaml converter",
+      "kubernetes yaml",
+    ],
+    category: "convert",
+    icon: "📄",
+  },
+  {
+    slug: "csv-json",
+    name: "CSV ↔ JSON Converter",
+    description:
+      "Convert CSV to JSON arrays or JSON back to CSV. Handles headers and custom delimiters.",
+    shortDescription: "Convert CSV & JSON",
+    keywords: ["csv to json", "json to csv", "csv converter", "csv parser"],
+    category: "convert",
+    icon: "📊",
+  },
+  {
+    slug: "toml-json",
+    name: "TOML ↔ JSON Converter",
+    description:
+      "Convert between TOML and JSON formats. Common for Rust and Python config files.",
+    shortDescription: "Convert TOML & JSON",
+    keywords: ["toml to json", "json to toml", "toml converter", "cargo toml"],
+    category: "convert",
+    icon: "⚙️",
+  },
+  {
+    slug: "cron-parser",
+    name: "Cron Expression Parser",
+    description:
+      "Parse and explain cron expressions in plain English. Shows next scheduled run times.",
+    shortDescription: "Parse cron expressions",
+    keywords: ["cron parser", "cron expression", "crontab", "cron schedule"],
+    category: "validate",
+    icon: "⏰",
+  },
+  {
+    slug: "jsonpath-tester",
+    name: "JSONPath Tester",
+    description:
+      "Test JSONPath expressions against JSON data. Find and extract nested values easily.",
+    shortDescription: "Test JSONPath queries",
+    keywords: ["jsonpath", "json query", "jsonpath tester", "json selector"],
+    category: "validate",
+    icon: "🔍",
+  },
+  {
+    slug: "unicode-inspector",
+    name: "Unicode Inspector",
+    description:
+      "Inspect Unicode characters. View code points, names, UTF-8 bytes, and character properties.",
+    shortDescription: "Inspect Unicode chars",
+    keywords: ["unicode", "code point", "utf-8", "character inspector"],
+    category: "validate",
+    icon: "🔤",
+  },
 ];
 
 export function getToolBySlug(slug: string): Tool | undefined {

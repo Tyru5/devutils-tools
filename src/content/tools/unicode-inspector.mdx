@@ -1,0 +1,52 @@
+---
+title: "Unicode Inspector"
+description: "Inspect Unicode characters and see their code points, encodings, and properties."
+lastUpdated: 2025-01-22
+---
+
+## How to use this tool
+
+1. Type or paste text in the input field
+2. Each character is analyzed automatically
+3. View code points, encodings, and categories
+
+## Information displayed
+
+| Column     | Description                             |
+| ---------- | --------------------------------------- |
+| Char       | Visual representation                   |
+| Code Point | Unicode code point (U+XXXX and decimal) |
+| UTF-8      | Byte representation in UTF-8            |
+| UTF-16     | Code units in UTF-16                    |
+| HTML       | HTML entity format                      |
+| Category   | Unicode block/category                  |
+
+## Understanding encodings
+
+**UTF-8**: Variable-width encoding (1-4 bytes). ASCII characters use 1 byte, most emojis use 4 bytes.
+
+**UTF-16**: Fixed-width encoding (2 or 4 bytes). Used internally by JavaScript strings.
+
+**Code Point**: The unique number assigned to each character in the Unicode standard.
+
+## Common use cases
+
+**Debugging invisible characters** — Find hidden characters like zero-width spaces.
+
+**Emoji analysis** — See how emojis are encoded (some are multiple code points).
+
+**Internationalization** — Verify correct character handling in different scripts.
+
+**Security** — Detect homograph attacks using similar-looking characters.
+
+## Grapheme vs Code Point
+
+A "grapheme" is what we perceive as a single character. Some graphemes consist of multiple code points:
+
+- Emoji with skin tone: 👋🏽 = 👋 + 🏽 (2 code points)
+- Accented letters: é = e + ́ (can be 2 code points)
+- Flags: 🇺🇸 = 🇺 + 🇸 (2 regional indicators)
+
+## Privacy
+
+All inspection happens in your browser. Your text never leaves your device.
