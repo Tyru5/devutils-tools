@@ -63,13 +63,11 @@ export default function JsonFormatter() {
 
   const handleInputChange = (value: string) => {
     setInput(value);
-    // Auto-clear error when typing
     if (error) setError(null);
   };
 
   return (
     <div className="space-y-4">
-      {/* Input/Output Grid */}
       <div className="grid gap-4 md:grid-cols-2">
         <Textarea
           value={input}
@@ -77,7 +75,7 @@ export default function JsonFormatter() {
           placeholder="Paste your JSON here..."
           label="Input"
           rows={14}
-          className={error ? "border-red-500 focus:ring-red-500" : ""}
+          className={error ? "border-red-500 dark:border-red-500" : ""}
         />
         <Textarea
           value={output}
@@ -88,46 +86,34 @@ export default function JsonFormatter() {
         />
       </div>
 
-      {/* Error Display */}
       {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
-          <strong>Error:</strong> {error}
+        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
+          {error}
         </div>
       )}
 
-      {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
-        <button
-          onClick={format}
-          className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
-        >
+        <button onClick={format} className="btn btn-primary">
           Format
         </button>
-        <button
-          onClick={minify}
-          className="rounded-md bg-gray-600 px-4 py-2 font-medium text-white transition-colors hover:bg-gray-700"
-        >
+        <button onClick={minify} className="btn btn-secondary">
           Minify
         </button>
         <CopyButton text={output} disabled={!output} />
-        <button
-          onClick={clear}
-          className="px-4 py-2 text-gray-600 transition-colors hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-        >
+        <button onClick={clear} className="btn btn-ghost">
           Clear
         </button>
 
-        {/* Indent Options */}
         <div className="ml-auto flex items-center gap-2 text-sm">
-          <span className="text-gray-500 dark:text-gray-400">Indent:</span>
+          <span className="text-neutral-500">Indent:</span>
           {(["2", "4", "tab"] as const).map((style) => (
             <button
               key={style}
               onClick={() => setIndent(style)}
-              className={`rounded px-2 py-1 transition-colors ${
+              className={`rounded-md px-2 py-1 text-sm transition-colors ${
                 indent === style
-                  ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
-                  : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                  ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
+                  : "text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
               }`}
             >
               {style === "tab" ? "Tab" : style}
@@ -136,11 +122,10 @@ export default function JsonFormatter() {
         </div>
       </div>
 
-      {/* Status */}
       {input && !error && (
-        <div className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
+        <div className="flex items-center gap-1.5 text-sm text-neutral-500">
           <svg
-            className="h-4 w-4"
+            className="size-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

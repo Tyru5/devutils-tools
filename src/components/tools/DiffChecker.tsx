@@ -7,16 +7,13 @@ interface DiffLine {
   content: string;
 }
 
-// Simple line-by-line diff algorithm
 function computeDiff(left: string, right: string): DiffLine[] {
   const leftLines = left.split("\n");
   const rightLines = right.split("\n");
 
-  // LCS-based diff
   const m = leftLines.length;
   const n = rightLines.length;
 
-  // Build LCS table
   const dp: number[][] = Array(m + 1)
     .fill(null)
     .map(() => Array(n + 1).fill(0));
@@ -31,7 +28,6 @@ function computeDiff(left: string, right: string): DiffLine[] {
     }
   }
 
-  // Backtrack to find diff
   const result: DiffLine[] = [];
   let i = m,
     j = n;
@@ -110,11 +106,11 @@ export default function DiffChecker() {
   const getLineClass = (type: DiffLine["type"]) => {
     switch (type) {
       case "insert":
-        return "bg-green-100 dark:bg-green-900/30 border-l-4 border-green-500";
+        return "bg-green-50 dark:bg-green-950/30 border-l-2 border-green-500";
       case "delete":
-        return "bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500";
+        return "bg-red-50 dark:bg-red-950/30 border-l-2 border-red-500";
       default:
-        return "bg-gray-50 dark:bg-gray-800/50";
+        return "bg-neutral-50/50 dark:bg-neutral-900/50";
     }
   };
 
@@ -131,16 +127,15 @@ export default function DiffChecker() {
 
   return (
     <div className="space-y-4">
-      {/* Options */}
       <div className="flex flex-wrap items-center gap-4">
         <label className="flex cursor-pointer items-center gap-2">
           <input
             type="checkbox"
             checked={ignoreWhitespace}
             onChange={(e) => setIgnoreWhitespace(e.target.checked)}
-            className="rounded border-gray-300 dark:border-gray-600"
+            className="rounded border-neutral-300 dark:border-neutral-700"
           />
-          <span className="text-sm text-gray-700 dark:text-gray-300">
+          <span className="text-sm text-neutral-600 dark:text-neutral-400">
             Ignore whitespace
           </span>
         </label>
@@ -149,21 +144,17 @@ export default function DiffChecker() {
             type="checkbox"
             checked={ignoreCase}
             onChange={(e) => setIgnoreCase(e.target.checked)}
-            className="rounded border-gray-300 dark:border-gray-600"
+            className="rounded border-neutral-300 dark:border-neutral-700"
           />
-          <span className="text-sm text-gray-700 dark:text-gray-300">
+          <span className="text-sm text-neutral-600 dark:text-neutral-400">
             Ignore case
           </span>
         </label>
-        <button
-          onClick={swap}
-          className="rounded-md bg-gray-200 px-3 py-1 text-sm transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-        >
-          ⇄ Swap
+        <button onClick={swap} className="btn btn-secondary">
+          Swap
         </button>
       </div>
 
-      {/* Input Areas */}
       <div className="grid gap-4 md:grid-cols-2">
         <Textarea
           value={leftText}
@@ -181,7 +172,6 @@ export default function DiffChecker() {
         />
       </div>
 
-      {/* Stats */}
       {(leftText || rightText) && (
         <div className="flex items-center gap-4 text-sm">
           <span className="text-green-600 dark:text-green-400">
@@ -190,21 +180,18 @@ export default function DiffChecker() {
           <span className="text-red-600 dark:text-red-400">
             -{stats.deletions} deletion{stats.deletions !== 1 ? "s" : ""}
           </span>
-          <span className="text-gray-500 dark:text-gray-400">
-            {stats.unchanged} unchanged
-          </span>
+          <span className="text-neutral-500">{stats.unchanged} unchanged</span>
         </div>
       )}
 
-      {/* Diff Output */}
       {(leftText || rightText) && (
-        <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-          <div className="border-b border-gray-200 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+        <div className="overflow-hidden rounded-md border border-neutral-200 dark:border-neutral-800">
+          <div className="border-b border-neutral-200 bg-neutral-50 px-4 py-2 text-xs font-medium uppercase tracking-widest text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900">
             Diff Output
           </div>
           <div className="max-h-96 overflow-y-auto">
             {diff.length === 0 ? (
-              <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+              <div className="p-4 text-center text-neutral-500">
                 Enter text in both fields to see the diff
               </div>
             ) : (
@@ -214,10 +201,10 @@ export default function DiffChecker() {
                     key={index}
                     className={`flex ${getLineClass(line.type)}`}
                   >
-                    <div className="w-8 flex-shrink-0 select-none border-r border-gray-200 py-1 text-center text-gray-400 dark:border-gray-700 dark:text-gray-500">
+                    <div className="w-8 flex-shrink-0 select-none border-r border-neutral-200 py-1 text-center text-neutral-400 dark:border-neutral-800">
                       {line.lineNumber.left || ""}
                     </div>
-                    <div className="w-8 flex-shrink-0 select-none border-r border-gray-200 py-1 text-center text-gray-400 dark:border-gray-700 dark:text-gray-500">
+                    <div className="w-8 flex-shrink-0 select-none border-r border-neutral-200 py-1 text-center text-neutral-400 dark:border-neutral-800">
                       {line.lineNumber.right || ""}
                     </div>
                     <div
@@ -226,7 +213,7 @@ export default function DiffChecker() {
                           ? "text-green-600"
                           : line.type === "delete"
                             ? "text-red-600"
-                            : "text-gray-400"
+                            : "text-neutral-400"
                       }`}
                     >
                       {getLinePrefix(line.type)}
@@ -242,24 +229,19 @@ export default function DiffChecker() {
         </div>
       )}
 
-      {/* Identical Check */}
       {leftText &&
         rightText &&
         stats.additions === 0 &&
         stats.deletions === 0 && (
-          <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-center dark:border-green-800 dark:bg-green-900/20">
+          <div className="rounded-md border border-green-200 bg-green-50 p-4 text-center dark:border-green-900 dark:bg-green-950/30">
             <span className="font-medium text-green-700 dark:text-green-400">
-              ✓ Texts are identical
+              Texts are identical
             </span>
           </div>
         )}
 
-      {/* Controls */}
       <div className="flex items-center gap-3">
-        <button
-          onClick={clear}
-          className="px-4 py-2 text-gray-600 transition-colors hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-        >
+        <button onClick={clear} className="btn btn-ghost">
           Clear
         </button>
       </div>

@@ -2,12 +2,10 @@ import { useState } from "react";
 import CopyButton from "./shared/CopyButton";
 
 function generateUUID(): string {
-  // crypto.randomUUID() is available in modern browsers
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
     return crypto.randomUUID();
   }
 
-  // Fallback for older browsers
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
     const v = c === "x" ? r : (r & 0x3) | 0x8;
@@ -33,22 +31,13 @@ export default function UuidGenerator() {
     setUuids(newUuids);
   };
 
-  const copyAll = () => {
-    const text = uuids.map(formatUuid).join("\n");
-    navigator.clipboard.writeText(text);
-  };
-
   const formattedUuids = uuids.map(formatUuid);
 
   return (
     <div className="space-y-6">
-      {/* Controls */}
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-2">
-          <label
-            htmlFor="count"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
-          >
+          <label htmlFor="count" className="text-sm text-neutral-500">
             Count:
           </label>
           <input
@@ -62,14 +51,11 @@ export default function UuidGenerator() {
                 Math.min(100, Math.max(1, parseInt(e.target.value) || 1)),
               )
             }
-            className="w-20 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-900"
+            className="input w-20"
           />
         </div>
 
-        <button
-          onClick={generate}
-          className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
-        >
+        <button onClick={generate} className="btn btn-primary">
           Generate
         </button>
 
@@ -79,9 +65,11 @@ export default function UuidGenerator() {
               type="checkbox"
               checked={uppercase}
               onChange={(e) => setUppercase(e.target.checked)}
-              className="rounded border-gray-300 dark:border-gray-600"
+              className="rounded border-neutral-300 dark:border-neutral-700"
             />
-            <span className="text-gray-700 dark:text-gray-300">Uppercase</span>
+            <span className="text-neutral-600 dark:text-neutral-400">
+              Uppercase
+            </span>
           </label>
 
           <label className="flex cursor-pointer items-center gap-2 text-sm">
@@ -89,25 +77,28 @@ export default function UuidGenerator() {
               type="checkbox"
               checked={noDashes}
               onChange={(e) => setNoDashes(e.target.checked)}
-              className="rounded border-gray-300 dark:border-gray-600"
+              className="rounded border-neutral-300 dark:border-neutral-700"
             />
-            <span className="text-gray-700 dark:text-gray-300">No dashes</span>
+            <span className="text-neutral-600 dark:text-neutral-400">
+              No dashes
+            </span>
           </label>
         </div>
       </div>
 
-      {/* Output */}
-      <div className="rounded-md border border-gray-300 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-900">
-        <div className="max-h-80 space-y-2 overflow-y-auto font-mono text-sm">
+      <div className="rounded-md border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900">
+        <div className="max-h-80 space-y-1 overflow-y-auto font-mono text-sm">
           {formattedUuids.map((uuid, index) => (
             <div
               key={index}
-              className="group flex items-center justify-between gap-4 rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="group flex items-center justify-between gap-4 rounded px-2 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800"
             >
-              <code className="select-all">{uuid}</code>
+              <code className="select-all text-neutral-900 dark:text-neutral-100">
+                {uuid}
+              </code>
               <button
                 onClick={() => navigator.clipboard.writeText(uuid)}
-                className="text-xs text-gray-500 opacity-0 transition-opacity hover:text-gray-700 group-hover:opacity-100 dark:hover:text-gray-300"
+                className="text-xs text-neutral-400 opacity-0 transition-opacity hover:text-neutral-600 group-hover:opacity-100 dark:hover:text-neutral-300"
               >
                 Copy
               </button>
@@ -116,10 +107,9 @@ export default function UuidGenerator() {
         </div>
       </div>
 
-      {/* Bulk Actions */}
       <div className="flex items-center gap-3">
         <CopyButton text={formattedUuids.join("\n")} />
-        <span className="text-sm text-gray-500 dark:text-gray-400">
+        <span className="text-sm text-neutral-500">
           {uuids.length} UUID{uuids.length !== 1 ? "s" : ""} generated
         </span>
       </div>
