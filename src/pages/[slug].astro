@@ -33,6 +33,8 @@ import SqlFormatter from "../components/tools/SqlFormatter";
 import HtmlFormatter from "../components/tools/HtmlFormatter";
 import SvgOptimizer from "../components/tools/SvgOptimizer";
 import OpenApiViewer from "../components/tools/OpenApiViewer";
+import QrGenerator from "../components/tools/QrGenerator";
+import ImageToolkit from "../components/tools/ImageToolkit";
 
 export async function getStaticPaths() {
   const toolEntries = await getCollection("tools");
@@ -84,6 +86,8 @@ const slug = entry.slug;
     {slug === "html-formatter" && <HtmlFormatter client:idle />}
     {slug === "svg-optimizer" && <SvgOptimizer client:idle />}
     {slug === "openapi-viewer" && <OpenApiViewer client:idle />}
+    {slug === "qr-generator" && <QrGenerator client:load />}
+    {slug === "image-toolkit" && <ImageToolkit client:idle />}
   </Fragment>
   <Content />
 </ToolLayout>

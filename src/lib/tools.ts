@@ -375,6 +375,31 @@ export const tools: Tool[] = [
     category: "format",
     icon: "📋",
   },
+  {
+    slug: "qr-generator",
+    name: "QR Code Generator",
+    description:
+      "Generate QR codes from text or URLs. Customize colors and download as PNG or SVG.",
+    shortDescription: "Generate QR codes",
+    keywords: ["qr code generator", "qr code", "create qr code", "qr maker"],
+    category: "generate",
+    icon: "📱",
+  },
+  {
+    slug: "image-toolkit",
+    name: "Image Toolkit",
+    description:
+      "Convert images to Base64, compress, resize, and convert between formats. All in one tool.",
+    shortDescription: "Image utilities",
+    keywords: [
+      "image to base64",
+      "compress image",
+      "resize image",
+      "convert image",
+    ],
+    category: "convert",
+    icon: "🖼️",
+  },
 ];
 
 export function getToolBySlug(slug: string): Tool | undefined {
