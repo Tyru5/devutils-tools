@@ -1,5 +1,5 @@
 import { useState } from "react";
-import TOML from "@iarna/toml";
+import { parse as tomlParse, stringify as tomlStringify } from "smol-toml";
 import Textarea from "./shared/Textarea";
 import CopyButton from "./shared/CopyButton";
 
@@ -21,11 +21,11 @@ export default function TomlJsonConverter() {
 
     try {
       if (mode === "toml-to-json") {
-        const parsed = TOML.parse(input);
+        const parsed = tomlParse(input);
         setOutput(JSON.stringify(parsed, null, indent));
       } else {
         const parsed = JSON.parse(input);
-        setOutput(TOML.stringify(parsed as TOML.JsonMap));
+        setOutput(tomlStringify(parsed));
       }
       setError(null);
     } catch (e) {
