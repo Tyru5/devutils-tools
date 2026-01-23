@@ -26,11 +26,7 @@ export default function QrGenerator() {
   const [error, setError] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => {
-    generateQR();
-  }, [text, size, errorLevel, fgColor, bgColor]);
-
-  const generateQR = async () => {
+    const generateQR = async () => {
     if (!text.trim()) {
       setDataUrl("");
       setSvgData("");
@@ -71,6 +67,10 @@ export default function QrGenerator() {
       setSvgData("");
     }
   };
+
+  useEffect(() => {
+    generateQR();
+  }, [text, size, errorLevel, fgColor, bgColor, generateQR]);
 
   const downloadPng = () => {
     if (!dataUrl) return;
