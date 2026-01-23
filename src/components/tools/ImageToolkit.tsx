@@ -278,15 +278,26 @@ export default function ImageToolkit() {
               {outputFile && (
                 <p className="text-xs text-neutral-500">
                   {(outputFile.size / 1024).toFixed(1)} KB
-                  {image && (
-                    <span className="ml-2 text-green-600">
-                      (
-                      {Math.round(
+                  {image &&
+                    (() => {
+                      const diff = Math.round(
                         (1 - outputFile.size / image.file.size) * 100,
-                      )}
-                      % smaller)
-                    </span>
-                  )}
+                      );
+                      if (diff > 0) {
+                        return (
+                          <span className="ml-2 text-green-600">
+                            ({diff}% smaller)
+                          </span>
+                        );
+                      } else if (diff < 0) {
+                        return (
+                          <span className="ml-2 text-amber-600">
+                            ({Math.abs(diff)}% larger)
+                          </span>
+                        );
+                      }
+                      return null;
+                    })()}
                 </p>
               )}
             </div>
