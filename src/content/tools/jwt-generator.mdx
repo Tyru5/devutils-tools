@@ -1,0 +1,48 @@
+---
+title: "JWT Generator"
+description: "Generate JSON Web Tokens with custom claims and signatures."
+lastUpdated: 2025-01-22
+---
+
+## How to use this tool
+
+1. Enter your secret key
+2. Select the signing algorithm
+3. Edit the payload JSON with your claims
+4. Click **Generate JWT**
+5. Copy the generated token
+
+## Supported algorithms
+
+| Algorithm | Key Size | Security  |
+| --------- | -------- | --------- |
+| HS256     | 256-bit  | Standard  |
+| HS384     | 384-bit  | Strong    |
+| HS512     | 512-bit  | Strongest |
+
+## Common claims
+
+| Claim | Description           |
+| ----- | --------------------- |
+| `sub` | Subject (user ID)     |
+| `iat` | Issued at (timestamp) |
+| `exp` | Expiration time       |
+| `nbf` | Not before            |
+| `iss` | Issuer                |
+| `aud` | Audience              |
+
+## Quick expiry
+
+Use the quick buttons to set expiration:
+
+- **+1h** — 1 hour from now
+- **+1d** — 1 day from now
+- **+7d** — 7 days from now
+
+## Security warning
+
+This tool is for **testing and development only**. Never expose production secret keys in a browser. Generated tokens should not be used in production without proper key management.
+
+## Privacy
+
+All JWT generation happens in your browser. Your secret keys and payloads never leave your device.

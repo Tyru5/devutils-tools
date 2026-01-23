@@ -15,6 +15,30 @@ import RegexTester from "../components/tools/RegexTester";
 import DiffChecker from "../components/tools/DiffChecker";
 import ColorConverter from "../components/tools/ColorConverter";
 import MarkdownPreview from "../components/tools/MarkdownPreview";
+import LoremIpsumGenerator from "../components/tools/LoremIpsumGenerator";
+import NumberBaseConverter from "../components/tools/NumberBaseConverter";
+import TextCaseConverter from "../components/tools/TextCaseConverter";
+import PasswordGenerator from "../components/tools/PasswordGenerator";
+import HtmlEntities from "../components/tools/HtmlEntities";
+import BackslashEscape from "../components/tools/BackslashEscape";
+import ChmodCalculator from "../components/tools/ChmodCalculator";
+import EpochBatchConverter from "../components/tools/EpochBatchConverter";
+import YamlJsonConverter from "../components/tools/YamlJsonConverter";
+import CsvJsonConverter from "../components/tools/CsvJsonConverter";
+import TomlJsonConverter from "../components/tools/TomlJsonConverter";
+import CronParser from "../components/tools/CronParser";
+import JsonPathTester from "../components/tools/JsonPathTester";
+import UnicodeInspector from "../components/tools/UnicodeInspector";
+import SqlFormatter from "../components/tools/SqlFormatter";
+import HtmlFormatter from "../components/tools/HtmlFormatter";
+import SvgOptimizer from "../components/tools/SvgOptimizer";
+import OpenApiViewer from "../components/tools/OpenApiViewer";
+import QrGenerator from "../components/tools/QrGenerator";
+import ImageToolkit from "../components/tools/ImageToolkit";
+import JwtGenerator from "../components/tools/JwtGenerator";
+import HttpHeaders from "../components/tools/HttpHeaders";
+import IpCalculator from "../components/tools/IpCalculator";
+import GitDiffViewer from "../components/tools/GitDiffViewer";
 
 export async function getStaticPaths() {
   const toolEntries = await getCollection("tools");
@@ -48,6 +72,30 @@ const slug = entry.slug;
     {slug === "diff-checker" && <DiffChecker client:load />}
     {slug === "color-converter" && <ColorConverter client:load />}
     {slug === "markdown-preview" && <MarkdownPreview client:load />}
+    {slug === "lorem-ipsum" && <LoremIpsumGenerator client:load />}
+    {slug === "number-base" && <NumberBaseConverter client:load />}
+    {slug === "text-case" && <TextCaseConverter client:load />}
+    {slug === "password-generator" && <PasswordGenerator client:load />}
+    {slug === "html-entities" && <HtmlEntities client:load />}
+    {slug === "backslash-escape" && <BackslashEscape client:load />}
+    {slug === "chmod-calculator" && <ChmodCalculator client:load />}
+    {slug === "epoch-batch" && <EpochBatchConverter client:load />}
+    {slug === "yaml-json" && <YamlJsonConverter client:load />}
+    {slug === "csv-json" && <CsvJsonConverter client:load />}
+    {slug === "toml-json" && <TomlJsonConverter client:load />}
+    {slug === "cron-parser" && <CronParser client:load />}
+    {slug === "jsonpath-tester" && <JsonPathTester client:load />}
+    {slug === "unicode-inspector" && <UnicodeInspector client:load />}
+    {slug === "sql-formatter" && <SqlFormatter client:idle />}
+    {slug === "html-formatter" && <HtmlFormatter client:idle />}
+    {slug === "svg-optimizer" && <SvgOptimizer client:idle />}
+    {slug === "openapi-viewer" && <OpenApiViewer client:idle />}
+    {slug === "qr-generator" && <QrGenerator client:load />}
+    {slug === "image-toolkit" && <ImageToolkit client:idle />}
+    {slug === "jwt-generator" && <JwtGenerator client:idle />}
+    {slug === "http-headers" && <HttpHeaders client:load />}
+    {slug === "ip-calculator" && <IpCalculator client:load />}
+    {slug === "git-diff" && <GitDiffViewer client:idle />}
   </Fragment>
   <Content />
 </ToolLayout>

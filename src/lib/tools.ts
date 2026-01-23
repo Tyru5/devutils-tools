@@ -4,7 +4,13 @@ export interface Tool {
   description: string;
   shortDescription: string;
   keywords: string[];
-  category: "encode-decode" | "format" | "generate" | "convert" | "validate";
+  category:
+    | "encode-decode"
+    | "format"
+    | "generate"
+    | "convert"
+    | "validate"
+    | "security";
   icon: string;
 }
 
@@ -133,6 +139,317 @@ export const tools: Tool[] = [
     category: "format",
     icon: "M↓",
   },
+  {
+    slug: "lorem-ipsum",
+    name: "Lorem Ipsum Generator",
+    description:
+      "Generate placeholder text for designs and mockups. Configurable paragraphs, sentences, or words.",
+    shortDescription: "Generate placeholder text",
+    keywords: ["lorem ipsum", "placeholder text", "dummy text", "lipsum"],
+    category: "generate",
+    icon: "📝",
+  },
+  {
+    slug: "number-base",
+    name: "Number Base Converter",
+    description:
+      "Convert numbers between binary, decimal, hexadecimal, and octal. Supports large numbers.",
+    shortDescription: "Convert number bases",
+    keywords: [
+      "binary converter",
+      "hex to decimal",
+      "octal converter",
+      "base converter",
+    ],
+    category: "convert",
+    icon: "🔢",
+  },
+  {
+    slug: "text-case",
+    name: "Text Case Converter",
+    description:
+      "Convert text between camelCase, snake_case, kebab-case, PascalCase, CONSTANT_CASE, and more.",
+    shortDescription: "Convert text case",
+    keywords: [
+      "camelcase",
+      "snake case",
+      "kebab case",
+      "text case converter",
+      "slugify",
+    ],
+    category: "convert",
+    icon: "Aa",
+  },
+  {
+    slug: "password-generator",
+    name: "Password Generator",
+    description:
+      "Generate secure random passwords with configurable length and character sets. Includes strength meter.",
+    shortDescription: "Generate secure passwords",
+    keywords: [
+      "password generator",
+      "random password",
+      "secure password",
+      "strong password",
+    ],
+    category: "security",
+    icon: "🔐",
+  },
+  {
+    slug: "html-entities",
+    name: "HTML Entity Encoder/Decoder",
+    description:
+      "Encode special characters to HTML entities or decode entities back to characters.",
+    shortDescription: "Encode/decode HTML entities",
+    keywords: [
+      "html entities",
+      "html encode",
+      "html decode",
+      "special characters",
+    ],
+    category: "encode-decode",
+    icon: "&lt;",
+  },
+  {
+    slug: "backslash-escape",
+    name: "Backslash Escape/Unescape",
+    description:
+      "Escape or unescape special characters like newlines, tabs, and quotes for use in strings.",
+    shortDescription: "Escape/unescape strings",
+    keywords: [
+      "escape string",
+      "unescape string",
+      "backslash escape",
+      "string escape",
+    ],
+    category: "encode-decode",
+    icon: "\\\\",
+  },
+  {
+    slug: "chmod-calculator",
+    name: "chmod Calculator",
+    description:
+      "Convert between symbolic (rwxr-xr-x) and numeric (755) Unix file permissions.",
+    shortDescription: "Calculate file permissions",
+    keywords: [
+      "chmod calculator",
+      "file permissions",
+      "unix permissions",
+      "rwx to number",
+    ],
+    category: "convert",
+    icon: "🔒",
+  },
+  {
+    slug: "epoch-batch",
+    name: "Epoch Batch Converter",
+    description:
+      "Convert multiple Unix timestamps at once. Paste a list and get human-readable dates.",
+    shortDescription: "Batch convert timestamps",
+    keywords: [
+      "batch timestamp",
+      "multiple timestamps",
+      "epoch batch",
+      "bulk timestamp converter",
+    ],
+    category: "convert",
+    icon: "📅",
+  },
+  {
+    slug: "yaml-json",
+    name: "YAML ↔ JSON Converter",
+    description:
+      "Convert between YAML and JSON formats. Perfect for Kubernetes configs and CI/CD pipelines.",
+    shortDescription: "Convert YAML & JSON",
+    keywords: [
+      "yaml to json",
+      "json to yaml",
+      "yaml converter",
+      "kubernetes yaml",
+    ],
+    category: "convert",
+    icon: "📄",
+  },
+  {
+    slug: "csv-json",
+    name: "CSV ↔ JSON Converter",
+    description:
+      "Convert CSV to JSON arrays or JSON back to CSV. Handles headers and custom delimiters.",
+    shortDescription: "Convert CSV & JSON",
+    keywords: ["csv to json", "json to csv", "csv converter", "csv parser"],
+    category: "convert",
+    icon: "📊",
+  },
+  {
+    slug: "toml-json",
+    name: "TOML ↔ JSON Converter",
+    description:
+      "Convert between TOML and JSON formats. Common for Rust and Python config files.",
+    shortDescription: "Convert TOML & JSON",
+    keywords: ["toml to json", "json to toml", "toml converter", "cargo toml"],
+    category: "convert",
+    icon: "⚙️",
+  },
+  {
+    slug: "cron-parser",
+    name: "Cron Expression Parser",
+    description:
+      "Parse and explain cron expressions in plain English. Shows next scheduled run times.",
+    shortDescription: "Parse cron expressions",
+    keywords: ["cron parser", "cron expression", "crontab", "cron schedule"],
+    category: "validate",
+    icon: "⏰",
+  },
+  {
+    slug: "jsonpath-tester",
+    name: "JSONPath Tester",
+    description:
+      "Test JSONPath expressions against JSON data. Find and extract nested values easily.",
+    shortDescription: "Test JSONPath queries",
+    keywords: ["jsonpath", "json query", "jsonpath tester", "json selector"],
+    category: "validate",
+    icon: "🔍",
+  },
+  {
+    slug: "unicode-inspector",
+    name: "Unicode Inspector",
+    description:
+      "Inspect Unicode characters. View code points, names, UTF-8 bytes, and character properties.",
+    shortDescription: "Inspect Unicode chars",
+    keywords: ["unicode", "code point", "utf-8", "character inspector"],
+    category: "validate",
+    icon: "🔤",
+  },
+  {
+    slug: "sql-formatter",
+    name: "SQL Formatter",
+    description:
+      "Format and beautify SQL queries. Supports PostgreSQL, MySQL, SQLite, SQL Server, and more.",
+    shortDescription: "Format SQL queries",
+    keywords: [
+      "sql formatter",
+      "sql beautifier",
+      "format sql",
+      "sql pretty print",
+    ],
+    category: "format",
+    icon: "🗃️",
+  },
+  {
+    slug: "html-formatter",
+    name: "HTML/XML Formatter",
+    description:
+      "Format and beautify HTML and XML code with customizable indentation.",
+    shortDescription: "Format HTML & XML",
+    keywords: [
+      "html formatter",
+      "xml formatter",
+      "html beautifier",
+      "prettify html",
+    ],
+    category: "format",
+    icon: "📐",
+  },
+  {
+    slug: "svg-optimizer",
+    name: "SVG Optimizer",
+    description:
+      "Optimize and minify SVG files. Remove unnecessary data and reduce file size.",
+    shortDescription: "Optimize SVG files",
+    keywords: ["svg optimizer", "svgo", "minify svg", "compress svg"],
+    category: "format",
+    icon: "🖼️",
+  },
+  {
+    slug: "openapi-viewer",
+    name: "OpenAPI Viewer",
+    description:
+      "View and explore OpenAPI/Swagger specifications. Parse and display API endpoints.",
+    shortDescription: "View OpenAPI specs",
+    keywords: [
+      "openapi viewer",
+      "swagger viewer",
+      "api documentation",
+      "openapi parser",
+    ],
+    category: "format",
+    icon: "📋",
+  },
+  {
+    slug: "qr-generator",
+    name: "QR Code Generator",
+    description:
+      "Generate QR codes from text or URLs. Customize colors and download as PNG or SVG.",
+    shortDescription: "Generate QR codes",
+    keywords: ["qr code generator", "qr code", "create qr code", "qr maker"],
+    category: "generate",
+    icon: "📱",
+  },
+  {
+    slug: "image-toolkit",
+    name: "Image Toolkit",
+    description:
+      "Convert images to Base64, compress, resize, and convert between formats. All in one tool.",
+    shortDescription: "Image utilities",
+    keywords: [
+      "image to base64",
+      "compress image",
+      "resize image",
+      "convert image",
+    ],
+    category: "convert",
+    icon: "🖼️",
+  },
+  {
+    slug: "jwt-generator",
+    name: "JWT Generator",
+    description:
+      "Generate JSON Web Tokens with custom claims and signatures. Supports HS256, HS384, HS512.",
+    shortDescription: "Generate JWTs",
+    keywords: ["jwt generator", "create jwt", "jwt maker", "json web token"],
+    category: "security",
+    icon: "🔑",
+  },
+  {
+    slug: "http-headers",
+    name: "HTTP Header Parser",
+    description:
+      "Parse and explain HTTP headers. Understand cache-control, CORS, security headers, and more.",
+    shortDescription: "Parse HTTP headers",
+    keywords: [
+      "http headers",
+      "header parser",
+      "cors headers",
+      "cache control",
+    ],
+    category: "validate",
+    icon: "📨",
+  },
+  {
+    slug: "ip-calculator",
+    name: "IP/CIDR Calculator",
+    description:
+      "Calculate IP ranges, subnets, and CIDR notation. Convert between formats and find network details.",
+    shortDescription: "Calculate IP ranges",
+    keywords: [
+      "ip calculator",
+      "cidr calculator",
+      "subnet calculator",
+      "ip range",
+    ],
+    category: "convert",
+    icon: "🌐",
+  },
+  {
+    slug: "git-diff",
+    name: "Git Diff Viewer",
+    description:
+      "View and highlight git diff output with syntax highlighting. Supports unified diff format.",
+    shortDescription: "View git diffs",
+    keywords: ["git diff", "diff viewer", "patch viewer", "unified diff"],
+    category: "validate",
+    icon: "📝",
+  },
 ];
 
 export function getToolBySlug(slug: string): Tool | undefined {
@@ -154,4 +471,5 @@ export const categoryNames: Record<Tool["category"], string> = {
   generate: "Generate",
   convert: "Convert",
   validate: "Validate & Compare",
+  security: "Security & Crypto",
 };

@@ -1,0 +1,47 @@
+---
+title: "Epoch Batch Converter"
+description: "Convert multiple Unix timestamps to human-readable dates at once."
+lastUpdated: 2025-01-22
+---
+
+## What is a Unix timestamp?
+
+A Unix timestamp (or epoch time) is the number of seconds (or milliseconds) since January 1, 1970 00:00:00 UTC. It's a universal way to represent time in computing.
+
+## How to use this tool
+
+1. Paste timestamps — one per line, or separated by commas/semicolons
+2. Select the format or use auto-detect
+3. Click **Convert**
+4. Copy individual results or all at once
+
+## Input formats
+
+**Seconds** — 10-digit timestamps (e.g., `1705593600`)
+
+**Milliseconds** — 13-digit timestamps (e.g., `1705593600000`)
+
+**Auto-detect** — The tool guesses based on magnitude
+
+## Output columns
+
+| Column     | Description                                |
+| ---------- | ------------------------------------------ |
+| Timestamp  | Original input value                       |
+| Local Date | Converted to your timezone                 |
+| ISO 8601   | Standard format (YYYY-MM-DDTHH:mm:ss.sssZ) |
+| Relative   | Human-friendly time ago/until              |
+
+## Common use cases
+
+**Log analysis** — Convert timestamps from server logs in bulk.
+
+**Database exports** — Humanize timestamp columns from database dumps.
+
+**API debugging** — Decode multiple timestamps from API responses.
+
+**Data migration** — Verify timestamp conversions during migrations.
+
+## Privacy
+
+All conversions happen in your browser. Your data never leaves your device.

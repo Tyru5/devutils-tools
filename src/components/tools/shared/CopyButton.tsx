@@ -4,12 +4,14 @@ interface CopyButtonProps {
   text: string;
   disabled?: boolean;
   className?: string;
+  label?: string;
 }
 
 export default function CopyButton({
   text,
   disabled = false,
   className = "",
+  label = "Copy",
 }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
@@ -37,7 +39,7 @@ export default function CopyButton({
             : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-500 dark:hover:text-neutral-100"
       } ${className}`}
     >
-      {copied ? "Copied" : "Copy"}
+      {copied ? "Copied" : label}
     </button>
   );
 }

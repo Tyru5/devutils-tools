@@ -1,0 +1,62 @@
+---
+title: "TOML ↔ JSON Converter"
+description: "Convert between TOML and JSON formats."
+lastUpdated: 2025-01-22
+---
+
+## What is TOML?
+
+TOML (Tom's Obvious Minimal Language) is a configuration file format that's easy to read and write. It's widely used in Rust projects (Cargo.toml), Python projects (pyproject.toml), and other modern tooling.
+
+## How to use this tool
+
+1. Select conversion direction: **TOML → JSON** or **JSON → TOML**
+2. Paste your configuration data
+3. Click **Convert**
+4. Use **Swap** to switch input and output
+
+## Common use cases
+
+**Rust projects** — Convert Cargo.toml for programmatic manipulation.
+
+**Python packaging** — Work with pyproject.toml configuration.
+
+**Hugo sites** — Convert Hugo's TOML config to JSON.
+
+**Configuration migration** — Move between TOML and JSON-based tools.
+
+## TOML features
+
+- **Tables**: Sections defined with `[section.name]`
+- **Arrays**: Inline `[1, 2, 3]` or multi-line
+- **Dates**: Native datetime support
+- **Comments**: Full comment support with `#`
+
+## Example
+
+```toml
+[package]
+name = "my-app"
+version = "1.0.0"
+
+[dependencies]
+serde = "1.0"
+```
+
+Converts to:
+
+```json
+{
+  "package": {
+    "name": "my-app",
+    "version": "1.0.0"
+  },
+  "dependencies": {
+    "serde": "1.0"
+  }
+}
+```
+
+## Privacy
+
+All conversions happen in your browser. Your data never leaves your device.

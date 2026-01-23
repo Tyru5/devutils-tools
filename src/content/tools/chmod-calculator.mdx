@@ -1,0 +1,46 @@
+---
+title: "chmod Calculator"
+description: "Convert between symbolic and numeric Unix file permissions."
+lastUpdated: 2025-01-22
+---
+
+## What is chmod?
+
+`chmod` (change mode) is a Unix command that sets file permissions. Permissions control who can read, write, or execute a file.
+
+## How to use this tool
+
+1. Enter a numeric value (like `755`) or symbolic notation (like `rwxr-xr-x`)
+2. Or click the permission grid to toggle individual permissions
+3. Copy the result or the full command
+
+## Permission types
+
+| Symbol | Value | Meaning                                              |
+| ------ | ----- | ---------------------------------------------------- |
+| r      | 4     | Read — view file contents or list directory          |
+| w      | 2     | Write — modify file or add/remove files in directory |
+| x      | 1     | Execute — run file as program or enter directory     |
+
+## User categories
+
+| Category | Position  | Description               |
+| -------- | --------- | ------------------------- |
+| Owner    | 1st digit | The file's owner          |
+| Group    | 2nd digit | Users in the file's group |
+| Others   | 3rd digit | Everyone else             |
+
+## Common permissions
+
+| Numeric | Symbolic  | Use Case                       |
+| ------- | --------- | ------------------------------ |
+| 755     | rwxr-xr-x | Executable files, directories  |
+| 644     | rw-r--r-- | Regular files                  |
+| 700     | rwx------ | Private executables            |
+| 600     | rw------- | Private files                  |
+| 777     | rwxrwxrwx | Full access (use with caution) |
+| 444     | r--r--r-- | Read-only for everyone         |
+
+## Privacy
+
+All calculations happen in your browser. Nothing is sent to any server.
