@@ -321,11 +321,19 @@ export async function executeTransform(
   input: string,
 ): Promise<string> {
   switch (transformId) {
-    case "base64-encode":
-      return btoa(unescape(encodeURIComponent(input)));
+    case "base64-encode": {
+      const bytes = new TextEncoder().encode(input);
+      const binString = Array.from(bytes, (b) => String.fromCodePoint(b)).join(
+        "",
+      );
+      return btoa(binString);
+    }
 
-    case "base64-decode":
-      return decodeURIComponent(escape(atob(input.trim())));
+    case "base64-decode": {
+      const binString = atob(input.trim());
+      const bytes = Uint8Array.from(binString, (c) => c.charCodeAt(0));
+      return new TextDecoder().decode(bytes);
+    }
 
     case "url-encode":
       return encodeURIComponent(input);
@@ -414,8 +422,14 @@ export async function executeTransform(
     case "jwt-decode": {
       const parts = input.trim().split(".");
       if (parts.length !== 3) throw new Error("Invalid JWT format");
-      const payload = parts[1];
-      const decoded = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+      const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+      const padded = payload.padEnd(
+        payload.length + ((4 - (payload.length % 4)) % 4),
+        "=",
+      );
+      const decoded = new TextDecoder().decode(
+        Uint8Array.from(atob(padded), (c) => c.charCodeAt(0)),
+      );
       return JSON.stringify(JSON.parse(decoded), null, 2);
     }
 
