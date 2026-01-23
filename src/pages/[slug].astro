@@ -39,6 +39,7 @@ import JwtGenerator from "../components/tools/JwtGenerator";
 import HttpHeaders from "../components/tools/HttpHeaders";
 import IpCalculator from "../components/tools/IpCalculator";
 import GitDiffViewer from "../components/tools/GitDiffViewer";
+import WorkflowBuilder from "../components/tools/WorkflowBuilder";
 
 export async function getStaticPaths() {
   const toolEntries = await getCollection("tools");
@@ -59,6 +60,7 @@ const slug = entry.slug;
   description={tool?.description || entry.data.description}
   slug={entry.slug}
   keywords={tool?.keywords}
+  beta={tool?.beta}
 >
   <Fragment slot="tool">
     {slug === "json-formatter" && <JsonFormatter client:load />}
@@ -96,6 +98,7 @@ const slug = entry.slug;
     {slug === "http-headers" && <HttpHeaders client:load />}
     {slug === "ip-calculator" && <IpCalculator client:load />}
     {slug === "git-diff" && <GitDiffViewer client:idle />}
+    {slug === "workflow" && <WorkflowBuilder client:load />}
   </Fragment>
   <Content />
 </ToolLayout>

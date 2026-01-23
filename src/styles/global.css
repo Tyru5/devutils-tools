@@ -126,4 +126,15 @@
   .divider {
     @apply h-px w-full bg-neutral-200 dark:bg-neutral-800;
   }
+
+  .beta-ribbon {
+    @apply absolute -left-8 top-3 -rotate-45 bg-amber-400 px-8 py-0.5 text-[10px] font-bold uppercase tracking-wider text-black shadow-sm;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 4px,
+      rgba(0, 0, 0, 0.1) 4px,
+      rgba(0, 0, 0, 0.1) 8px
+    );
+  }
 }

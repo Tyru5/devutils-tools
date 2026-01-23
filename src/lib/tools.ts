@@ -10,8 +10,10 @@ export interface Tool {
     | "generate"
     | "convert"
     | "validate"
-    | "security";
+    | "security"
+    | "workflow";
   icon: string;
+  beta?: boolean;
 }
 
 export const tools: Tool[] = [
@@ -450,6 +452,23 @@ export const tools: Tool[] = [
     category: "validate",
     icon: "📝",
   },
+  {
+    slug: "workflow",
+    name: "Workflow Builder",
+    description:
+      "Chain multiple transforms together into reusable pipelines. Build, save, and share custom data processing workflows.",
+    shortDescription: "Chain transforms together",
+    keywords: [
+      "workflow builder",
+      "transform chain",
+      "data pipeline",
+      "batch transform",
+      "tool chain",
+    ],
+    category: "workflow",
+    icon: "⛓️",
+    beta: true,
+  },
 ];
 
 export function getToolBySlug(slug: string): Tool | undefined {
@@ -472,4 +491,5 @@ export const categoryNames: Record<Tool["category"], string> = {
   convert: "Convert",
   validate: "Validate & Compare",
   security: "Security & Crypto",
+  workflow: "Workflow",
 };
