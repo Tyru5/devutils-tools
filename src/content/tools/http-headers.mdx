@@ -1,0 +1,51 @@
+---
+title: "HTTP Header Parser"
+description: "Parse and understand HTTP headers with explanations."
+lastUpdated: 2025-01-22
+---
+
+## How to use this tool
+
+1. Paste HTTP headers (one per line)
+2. Click **Parse**
+3. View categorized headers with explanations
+
+## Header categories
+
+| Category     | Examples                                        |
+| ------------ | ----------------------------------------------- |
+| **Content**  | Content-Type, Content-Length, Content-Encoding  |
+| **Caching**  | Cache-Control, ETag, Expires, Last-Modified     |
+| **CORS**     | Access-Control-Allow-Origin, Allow-Methods      |
+| **Security** | Strict-Transport-Security, CSP, X-Frame-Options |
+| **Auth**     | Authorization, Cookie, Set-Cookie               |
+
+## Common headers explained
+
+**Cache-Control** — Directives for caching:
+
+- `max-age=3600` — Cache for 1 hour
+- `no-cache` — Revalidate before using cache
+- `no-store` — Don't cache at all
+
+**Strict-Transport-Security** — HSTS settings:
+
+- `max-age=31536000` — Remember HTTPS for 1 year
+- `includeSubDomains` — Apply to all subdomains
+
+**Content-Security-Policy** — Control allowed resources:
+
+- `default-src 'self'` — Only load from same origin
+- `script-src` — Control JavaScript sources
+
+## Input format
+
+Headers should be in the standard format:
+
+```
+Header-Name: header-value
+```
+
+## Privacy
+
+All parsing happens in your browser. Your headers never leave your device.

@@ -1,0 +1,46 @@
+---
+title: "IP/CIDR Calculator"
+description: "Calculate IP ranges, subnets, and network details."
+lastUpdated: 2025-01-22
+---
+
+## How to use this tool
+
+1. Enter an IP address with CIDR notation (e.g., `192.168.1.0/24`)
+2. Click **Calculate**
+3. View network details, host range, and more
+
+## CIDR notation
+
+CIDR (Classless Inter-Domain Routing) uses a suffix to indicate network size:
+
+| CIDR | Netmask         | Hosts      |
+| ---- | --------------- | ---------- |
+| /8   | 255.0.0.0       | 16,777,214 |
+| /16  | 255.255.0.0     | 65,534     |
+| /24  | 255.255.255.0   | 254        |
+| /25  | 255.255.255.128 | 126        |
+| /30  | 255.255.255.252 | 2          |
+| /32  | 255.255.255.255 | 1          |
+
+## What you'll see
+
+**Network Address** — First address in the range (network identifier)
+
+**Broadcast Address** — Last address in the range
+
+**First/Last Host** — Usable IP addresses for devices
+
+**Usable Hosts** — Total addresses minus network and broadcast
+
+## Private IP ranges
+
+| Range       | CIDR | Purpose             |
+| ----------- | ---- | ------------------- |
+| 10.0.0.0    | /8   | Large networks      |
+| 172.16.0.0  | /12  | Medium networks     |
+| 192.168.0.0 | /16  | Home/small networks |
+
+## Privacy
+
+All calculations happen in your browser. Your data never leaves your device.

@@ -35,6 +35,10 @@ import SvgOptimizer from "../components/tools/SvgOptimizer";
 import OpenApiViewer from "../components/tools/OpenApiViewer";
 import QrGenerator from "../components/tools/QrGenerator";
 import ImageToolkit from "../components/tools/ImageToolkit";
+import JwtGenerator from "../components/tools/JwtGenerator";
+import HttpHeaders from "../components/tools/HttpHeaders";
+import IpCalculator from "../components/tools/IpCalculator";
+import GitDiffViewer from "../components/tools/GitDiffViewer";
 
 export async function getStaticPaths() {
   const toolEntries = await getCollection("tools");
@@ -88,6 +92,10 @@ const slug = entry.slug;
     {slug === "openapi-viewer" && <OpenApiViewer client:idle />}
     {slug === "qr-generator" && <QrGenerator client:load />}
     {slug === "image-toolkit" && <ImageToolkit client:idle />}
+    {slug === "jwt-generator" && <JwtGenerator client:idle />}
+    {slug === "http-headers" && <HttpHeaders client:load />}
+    {slug === "ip-calculator" && <IpCalculator client:load />}
+    {slug === "git-diff" && <GitDiffViewer client:idle />}
   </Fragment>
   <Content />
 </ToolLayout>

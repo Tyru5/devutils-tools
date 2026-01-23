@@ -400,6 +400,56 @@ export const tools: Tool[] = [
     category: "convert",
     icon: "🖼️",
   },
+  {
+    slug: "jwt-generator",
+    name: "JWT Generator",
+    description:
+      "Generate JSON Web Tokens with custom claims and signatures. Supports HS256, HS384, HS512.",
+    shortDescription: "Generate JWTs",
+    keywords: ["jwt generator", "create jwt", "jwt maker", "json web token"],
+    category: "security",
+    icon: "🔑",
+  },
+  {
+    slug: "http-headers",
+    name: "HTTP Header Parser",
+    description:
+      "Parse and explain HTTP headers. Understand cache-control, CORS, security headers, and more.",
+    shortDescription: "Parse HTTP headers",
+    keywords: [
+      "http headers",
+      "header parser",
+      "cors headers",
+      "cache control",
+    ],
+    category: "validate",
+    icon: "📨",
+  },
+  {
+    slug: "ip-calculator",
+    name: "IP/CIDR Calculator",
+    description:
+      "Calculate IP ranges, subnets, and CIDR notation. Convert between formats and find network details.",
+    shortDescription: "Calculate IP ranges",
+    keywords: [
+      "ip calculator",
+      "cidr calculator",
+      "subnet calculator",
+      "ip range",
+    ],
+    category: "convert",
+    icon: "🌐",
+  },
+  {
+    slug: "git-diff",
+    name: "Git Diff Viewer",
+    description:
+      "View and highlight git diff output with syntax highlighting. Supports unified diff format.",
+    shortDescription: "View git diffs",
+    keywords: ["git diff", "diff viewer", "patch viewer", "unified diff"],
+    category: "validate",
+    icon: "📝",
+  },
 ];
 
 export function getToolBySlug(slug: string): Tool | undefined {
