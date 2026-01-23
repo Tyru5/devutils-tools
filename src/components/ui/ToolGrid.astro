@@ -13,8 +13,11 @@ const { tools } = Astro.props;
     tools.map((tool) => (
       <a
         href={`/${tool.slug}`}
-        class="group block rounded-lg border border-neutral-200 bg-white p-5 transition-colors hover:border-neutral-400 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-600"
+        class:list={[
+          "group relative block overflow-hidden rounded-lg border border-neutral-200 bg-white p-5 transition-colors hover:border-neutral-400 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-600",
+        ]}
       >
+        {tool.beta && <span class="beta-ribbon">Beta</span>}
         <h3 class="mb-2 font-medium text-neutral-900 dark:text-neutral-100">
           {tool.name}
         </h3>

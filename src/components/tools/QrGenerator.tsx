@@ -26,7 +26,7 @@ export default function QrGenerator() {
   const [error, setError] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    const generateQR = async () => {
+  const generateQR = async () => {
     if (!text.trim()) {
       setDataUrl("");
       setSvgData("");

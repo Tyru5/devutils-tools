@@ -1,0 +1,85 @@
+---
+title: "Workflow Builder"
+description: "Chain multiple transforms together into reusable data processing pipelines."
+lastUpdated: 2025-01-22
+---
+
+## What is the Workflow Builder?
+
+The Workflow Builder lets you chain multiple data transforms together into a pipeline. Instead of copying output from one tool and pasting it into another, you can create a sequence of transforms that run automatically.
+
+## How to use this tool
+
+1. Enter your input data in the input area
+2. Click **Add Transform** to add steps to your chain
+3. Reorder steps by dragging or using the up/down arrows
+4. Click **Run Chain** to execute all transforms in sequence
+5. View intermediate results by expanding each step
+6. **Save** your workflow to reuse it later
+7. **Share** your workflow via URL with others
+
+## Available Transforms
+
+**Encode/Decode**
+
+- Base64 Encode/Decode
+- URL Encode/Decode
+- HTML Entities Encode/Decode
+- Escape/Unescape strings
+
+**Format**
+
+- JSON Format (prettify)
+- JSON Minify
+- JSON Parse (for escaped JSON strings)
+
+**Hash**
+
+- MD5, SHA-1, SHA-256, SHA-512
+
+**Text**
+
+- Uppercase, Lowercase
+- Trim whitespace
+- Reverse string
+
+**Convert**
+
+- YAML ↔ JSON
+- CSV → JSON
+- TOML ↔ JSON
+- JWT Decode (extract payload)
+
+## Example Workflows
+
+**Decode nested Base64 + JSON**
+
+1. Base64 Decode
+2. JSON Format
+
+Great for decoding JWT payloads or API responses.
+
+**Extract and hash JWT claims**
+
+1. JWT Decode
+2. JSON Minify
+3. SHA-256 Hash
+
+Useful for creating cache keys from token content.
+
+**Convert and format config files**
+
+1. YAML to JSON
+2. JSON Format
+
+Perfect for comparing YAML configs in JSON format.
+
+## Saving & Sharing
+
+Your saved workflows are stored in your browser's localStorage and will persist across sessions. They never leave your device.
+
+Share workflows via URL by clicking the **Share** button. The URL encodes only the transform chain, not your data — your input is never shared.
+
+## Is my data safe?
+
+Yes. All processing happens locally in your browser. Your data is never sent to any server. Saved workflows are stored only in your browser's localStorage.
