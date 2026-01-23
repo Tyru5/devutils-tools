@@ -347,9 +347,9 @@ export async function executeTransform(
     }
 
     case "html-decode": {
-      const div = document.createElement("div");
-      div.innerHTML = input;
-      return div.textContent || "";
+      const textarea = document.createElement("textarea");
+      textarea.innerHTML = input;
+      return textarea.value;
     }
 
     case "hash-md5":
@@ -386,11 +386,11 @@ export async function executeTransform(
 
     case "unescape":
       return input
+        .replace(/\\\\/g, "\\")
         .replace(/\\n/g, "\n")
         .replace(/\\r/g, "\r")
         .replace(/\\t/g, "\t")
-        .replace(/\\"/g, '"')
-        .replace(/\\\\/g, "\\");
+        .replace(/\\"/g, '"');
 
     case "jwt-decode": {
       const parts = input.trim().split(".");
