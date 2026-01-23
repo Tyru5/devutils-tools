@@ -121,11 +121,24 @@ export default function WorkflowBuilder() {
   const handleSave = () => {
     if (!workflowName.trim() || steps.length === 0) return;
 
+    const trimmedName = workflowName.trim();
+    const existingWorkflows = getWorkflows();
+    const duplicateWorkflow = existingWorkflows.find(
+      (w) => w.name.toLowerCase() === trimmedName.toLowerCase(),
+    );
+
+    if (duplicateWorkflow) {
+      const confirmOverwrite = window.confirm(
+        `A workflow named "${duplicateWorkflow.name}" already exists. Do you want to overwrite it?`,
+      );
+      if (!confirmOverwrite) return;
+    }
+
     const workflow: Workflow = {
-      id: generateId(),
-      name: workflowName.trim(),
+      id: duplicateWorkflow?.id ?? generateId(),
+      name: trimmedName,
       steps: steps.map((s) => ({ id: s.id, transformId: s.transformId })),
-      createdAt: Date.now(),
+      createdAt: duplicateWorkflow?.createdAt ?? Date.now(),
       updatedAt: Date.now(),
     };
 

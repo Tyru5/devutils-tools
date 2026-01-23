@@ -255,7 +255,9 @@ export interface Workflow {
 const STORAGE_KEY = "devutils-workflows";
 
 export function generateId(): string {
-  return Math.random().toString(36).substring(2, 10);
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  return Array.from(array, (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 export function getWorkflows(): Workflow[] {
@@ -347,9 +349,26 @@ export async function executeTransform(
     }
 
     case "html-decode": {
-      const textarea = document.createElement("textarea");
-      textarea.innerHTML = input;
-      return textarea.value;
+      const htmlEntities: Record<string, string> = {
+        "&amp;": "&",
+        "&lt;": "<",
+        "&gt;": ">",
+        "&quot;": '"',
+        "&#39;": "'",
+        "&apos;": "'",
+        "&nbsp;": "\u00A0",
+      };
+      let result = input;
+      for (const [entity, char] of Object.entries(htmlEntities)) {
+        result = result.split(entity).join(char);
+      }
+      result = result.replace(/&#(\d+);/g, (_, code) =>
+        String.fromCharCode(parseInt(code, 10)),
+      );
+      result = result.replace(/&#x([0-9a-fA-F]+);/g, (_, code) =>
+        String.fromCharCode(parseInt(code, 16)),
+      );
+      return result;
     }
 
     case "hash-md5":
@@ -386,11 +405,11 @@ export async function executeTransform(
 
     case "unescape":
       return input
-        .replace(/\\\\/g, "\\")
-        .replace(/\\n/g, "\n")
-        .replace(/\\r/g, "\r")
+        .replace(/\\"/g, '"')
         .replace(/\\t/g, "\t")
-        .replace(/\\"/g, '"');
+        .replace(/\\r/g, "\r")
+        .replace(/\\n/g, "\n")
+        .replace(/\\\\/g, "\\");
 
     case "jwt-decode": {
       const parts = input.trim().split(".");
