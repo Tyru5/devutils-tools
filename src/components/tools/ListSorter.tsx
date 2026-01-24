@@ -92,10 +92,6 @@ export default function ListSorter() {
       items = items.filter((item) => item.length > 0);
     }
 
-    if (removeDuplicates) {
-      items = [...new Set(items)];
-    }
-
     // Sort
     if (sortMode !== "none") {
       items.sort((a, b) => {
@@ -117,6 +113,10 @@ export default function ListSorter() {
         }
         return 0;
       });
+    }
+
+    if (removeDuplicates) {
+      items = [...new Set(items)];
     }
 
     // Detect which delimiter was used (for display)
