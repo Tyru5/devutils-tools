@@ -15,7 +15,11 @@ const INPUT_DELIMITERS: { value: InputDelimiter; label: string }[] = [
   { value: "custom", label: "Custom" },
 ];
 
-const OUTPUT_DELIMITERS: { value: OutputDelimiter; label: string; char: string }[] = [
+const OUTPUT_DELIMITERS: {
+  value: OutputDelimiter;
+  label: string;
+  char: string;
+}[] = [
   { value: "newline", label: "New line", char: "\n" },
   { value: "comma", label: "Comma", char: ", " },
   { value: "space", label: "Space", char: " " },
@@ -41,7 +45,11 @@ function detectDelimiter(input: string): string {
   return "\n"; // default
 }
 
-function getInputDelimiterChar(delimiter: InputDelimiter, customDelim: string, input: string): string {
+function getInputDelimiterChar(
+  delimiter: InputDelimiter,
+  customDelim: string,
+  input: string,
+): string {
   switch (delimiter) {
     case "auto":
       return detectDelimiter(input);
@@ -66,7 +74,8 @@ export default function ListSorter() {
   const [input, setInput] = useState("");
   const [inputDelimiter, setInputDelimiter] = useState<InputDelimiter>("auto");
   const [customInputDelim, setCustomInputDelim] = useState("");
-  const [outputDelimiter, setOutputDelimiter] = useState<OutputDelimiter>("newline");
+  const [outputDelimiter, setOutputDelimiter] =
+    useState<OutputDelimiter>("newline");
   const [sortMode, setSortMode] = useState<SortMode>("none");
   const [trimWhitespace, setTrimWhitespace] = useState(true);
   const [removeDuplicates, setRemoveDuplicates] = useState(false);
@@ -77,7 +86,11 @@ export default function ListSorter() {
       return { output: "", itemCount: 0, detectedDelimiter: "" };
     }
 
-    const inputDelimChar = getInputDelimiterChar(inputDelimiter, customInputDelim, input);
+    const inputDelimChar = getInputDelimiterChar(
+      inputDelimiter,
+      customInputDelim,
+      input,
+    );
     const outputDelimChar = getOutputDelimiterChar(outputDelimiter);
 
     // Split by delimiter
@@ -135,7 +148,16 @@ export default function ListSorter() {
       itemCount: items.length,
       detectedDelimiter: detected,
     };
-  }, [input, inputDelimiter, customInputDelim, outputDelimiter, sortMode, trimWhitespace, removeDuplicates, removeEmpty]);
+  }, [
+    input,
+    inputDelimiter,
+    customInputDelim,
+    outputDelimiter,
+    sortMode,
+    trimWhitespace,
+    removeDuplicates,
+    removeEmpty,
+  ]);
 
   return (
     <div className="space-y-6">
@@ -170,7 +192,9 @@ export default function ListSorter() {
                   name="inputDelimiter"
                   value={delim.value}
                   checked={inputDelimiter === delim.value}
-                  onChange={(e) => setInputDelimiter(e.target.value as InputDelimiter)}
+                  onChange={(e) =>
+                    setInputDelimiter(e.target.value as InputDelimiter)
+                  }
                   className="sr-only"
                 />
                 {delim.label}
@@ -213,7 +237,9 @@ export default function ListSorter() {
                   name="outputDelimiter"
                   value={delim.value}
                   checked={outputDelimiter === delim.value}
-                  onChange={(e) => setOutputDelimiter(e.target.value as OutputDelimiter)}
+                  onChange={(e) =>
+                    setOutputDelimiter(e.target.value as OutputDelimiter)
+                  }
                   className="sr-only"
                 />
                 {delim.label}
@@ -267,7 +293,9 @@ export default function ListSorter() {
                 onChange={(e) => setTrimWhitespace(e.target.checked)}
                 className="rounded border-neutral-300 dark:border-neutral-700"
               />
-              <span className="text-neutral-600 dark:text-neutral-400">Trim whitespace</span>
+              <span className="text-neutral-600 dark:text-neutral-400">
+                Trim whitespace
+              </span>
             </label>
             <label className="flex cursor-pointer items-center gap-2 text-sm">
               <input
@@ -276,7 +304,9 @@ export default function ListSorter() {
                 onChange={(e) => setRemoveEmpty(e.target.checked)}
                 className="rounded border-neutral-300 dark:border-neutral-700"
               />
-              <span className="text-neutral-600 dark:text-neutral-400">Remove empty</span>
+              <span className="text-neutral-600 dark:text-neutral-400">
+                Remove empty
+              </span>
             </label>
             <label className="flex cursor-pointer items-center gap-2 text-sm">
               <input
@@ -285,7 +315,9 @@ export default function ListSorter() {
                 onChange={(e) => setRemoveDuplicates(e.target.checked)}
                 className="rounded border-neutral-300 dark:border-neutral-700"
               />
-              <span className="text-neutral-600 dark:text-neutral-400">Remove duplicates</span>
+              <span className="text-neutral-600 dark:text-neutral-400">
+                Remove duplicates
+              </span>
             </label>
           </div>
         </div>
