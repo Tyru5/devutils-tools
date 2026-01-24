@@ -39,6 +39,7 @@ import JwtGenerator from "../components/tools/JwtGenerator";
 import HttpHeaders from "../components/tools/HttpHeaders";
 import IpCalculator from "../components/tools/IpCalculator";
 import GitDiffViewer from "../components/tools/GitDiffViewer";
+import ListSorter from "../components/tools/ListSorter";
 import WorkflowBuilder from "../components/tools/WorkflowBuilder";
 
 export async function getStaticPaths() {
@@ -98,6 +99,7 @@ const slug = entry.slug;
     {slug === "http-headers" && <HttpHeaders client:load />}
     {slug === "ip-calculator" && <IpCalculator client:load />}
     {slug === "git-diff" && <GitDiffViewer client:idle />}
+    {slug === "list-sorter" && <ListSorter client:load />}
     {slug === "workflow" && <WorkflowBuilder client:load />}
   </Fragment>
   <Content />
