@@ -453,6 +453,23 @@ export const tools: Tool[] = [
     icon: "📝",
   },
   {
+    slug: "list-sorter",
+    name: "List Sorter & Formatter",
+    description:
+      "Sort and format lists with ease. Convert between delimiters, sort alphabetically or numerically, remove duplicates, and more.",
+    shortDescription: "Sort & format lists",
+    keywords: [
+      "list sorter",
+      "sort list",
+      "list formatter",
+      "convert list",
+      "remove duplicates",
+      "alphabetize list",
+    ],
+    category: "format",
+    icon: "📋",
+  },
+  {
     slug: "workflow",
     name: "Workflow Builder",
     description:
