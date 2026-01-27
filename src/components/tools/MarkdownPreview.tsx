@@ -65,10 +65,14 @@ export default function MarkdownPreview() {
   const [isDragging, setIsDragging] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isPreviewFullscreen, setIsPreviewFullscreen] = useState(false);
   const [splitPos, setSplitPos] = useState(50);
   const [isResizing, setIsResizing] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dragCounterRef = useRef(0);
+  const isScrollingSyncRef = useRef(false);
 
   useEffect(() => {
     setMounted(true);
@@ -87,13 +91,14 @@ export default function MarkdownPreview() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isFullscreen) {
-        setIsFullscreen(false);
+      if (e.key === "Escape") {
+        if (isPreviewFullscreen) setIsPreviewFullscreen(false);
+        else if (isFullscreen) setIsFullscreen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isFullscreen]);
+  }, [isFullscreen, isPreviewFullscreen]);
 
   const html = useMemo(() => {
     if (!mounted) return "";
@@ -107,15 +112,28 @@ export default function MarkdownPreview() {
 
   const clear = () => setMarkdown("");
 
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    dragCounterRef.current++;
+    if (dragCounterRef.current === 1) {
+      setIsDragging(true);
+    }
+  }, []);
+
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    setIsDragging(true);
   };
 
-  const handleDragLeave = () => setIsDragging(false);
+  const handleDragLeave = useCallback(() => {
+    dragCounterRef.current--;
+    if (dragCounterRef.current === 0) {
+      setIsDragging(false);
+    }
+  }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
+    dragCounterRef.current = 0;
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
     if (
@@ -134,6 +152,31 @@ export default function MarkdownPreview() {
   const handleResizeStart = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setIsResizing(true);
+  }, []);
+
+  const syncScroll = useCallback((source: "editor" | "preview") => {
+    if (isScrollingSyncRef.current) return;
+    isScrollingSyncRef.current = true;
+
+    const editor = textareaRef.current;
+    const preview = previewRef.current;
+    if (!editor || !preview) {
+      isScrollingSyncRef.current = false;
+      return;
+    }
+
+    const sourceEl = source === "editor" ? editor : preview;
+    const targetEl = source === "editor" ? preview : editor;
+
+    const scrollableHeight = sourceEl.scrollHeight - sourceEl.clientHeight;
+    const scrollRatio =
+      scrollableHeight > 0 ? sourceEl.scrollTop / scrollableHeight : 0;
+    targetEl.scrollTop =
+      scrollRatio * (targetEl.scrollHeight - targetEl.clientHeight);
+
+    requestAnimationFrame(() => {
+      isScrollingSyncRef.current = false;
+    });
   }, []);
 
   useEffect(() => {
@@ -201,6 +244,7 @@ export default function MarkdownPreview() {
         <div
           className={`relative flex min-h-0 flex-col ${isDragging ? "ring-2 ring-inset ring-blue-500" : ""}`}
           style={{ width: `${splitPos}%` }}
+          onDragEnter={handleDragEnter}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
@@ -212,6 +256,7 @@ export default function MarkdownPreview() {
             ref={textareaRef}
             value={markdown}
             onChange={(e) => setMarkdown(e.target.value)}
+            onScroll={() => syncScroll("editor")}
             placeholder="Enter markdown..."
             className="min-h-0 w-full flex-1 resize-none border-0 bg-neutral-50 px-3 py-2 font-mono text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-0 dark:bg-neutral-900 dark:placeholder:text-neutral-600"
             spellCheck={false}
@@ -234,10 +279,21 @@ export default function MarkdownPreview() {
           className="flex min-h-0 flex-col"
           style={{ width: `${100 - splitPos}%` }}
         >
-          <label className="shrink-0 border-b border-neutral-200 px-3 py-2 text-xs font-medium uppercase tracking-widest text-neutral-400 dark:border-neutral-800 dark:text-neutral-500">
-            Preview
-          </label>
+          <div className="flex shrink-0 items-center justify-between border-b border-neutral-200 px-3 py-2 dark:border-neutral-800">
+            <label className="text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
+              Preview
+            </label>
+            <button
+              onClick={() => setIsPreviewFullscreen(true)}
+              className="text-xs text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
+              title="Fullscreen preview (Esc to exit)"
+            >
+              ⛶
+            </button>
+          </div>
           <div
+            ref={previewRef}
+            onScroll={() => syncScroll("preview")}
             className="prose prose-neutral min-h-0 max-w-none flex-1 overflow-y-auto bg-white p-4 dark:prose-invert prose-code:rounded prose-code:bg-neutral-100 prose-code:px-1 prose-code:py-0.5 prose-code:before:content-none prose-code:after:content-none prose-pre:bg-neutral-100 dark:bg-neutral-950 dark:prose-code:bg-neutral-800 dark:prose-pre:bg-neutral-800"
             dangerouslySetInnerHTML={{ __html: html }}
           />
@@ -249,6 +305,28 @@ export default function MarkdownPreview() {
       </p>
     </>
   );
+
+  if (isPreviewFullscreen) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-neutral-950">
+        <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3 dark:border-neutral-800">
+          <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+            Preview
+          </span>
+          <button
+            onClick={() => setIsPreviewFullscreen(false)}
+            className="btn btn-secondary text-sm"
+          >
+            Exit Fullscreen
+          </button>
+        </div>
+        <div
+          className="prose prose-neutral min-h-0 max-w-none flex-1 overflow-y-auto p-6 dark:prose-invert prose-code:rounded prose-code:bg-neutral-100 prose-code:px-1 prose-code:py-0.5 prose-code:before:content-none prose-code:after:content-none prose-pre:bg-neutral-100 dark:prose-code:bg-neutral-800 dark:prose-pre:bg-neutral-800"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      </div>
+    );
+  }
 
   if (isFullscreen) {
     return (
