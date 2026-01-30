@@ -181,7 +181,6 @@ function generateTypeScript(
   // Build the output
   const lines: string[] = [];
   const prefix = options.useExport ? "export " : "";
-  const keyword = options.useType ? "type" : "interface";
   const readonly = options.useReadonly ? "readonly " : "";
   const optional = options.optionalProperties ? "?" : "";
 
