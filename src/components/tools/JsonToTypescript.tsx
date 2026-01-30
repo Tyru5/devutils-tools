@@ -90,16 +90,15 @@ function inferType(
       const uniqueName = getUniqueInterfaceName(interfaceName, interfaces);
 
       const properties: { key: string; type: string }[] = [];
-      for (const [propKey, propValue] of Object.entries(mergedShape)) {
-        properties.push({
-          key: propKey,
-          type: inferType(
-            propValue,
-            propKey,
-            interfaces,
-            `${parentPath}.${key}`
-          ),
-        });
+      for (const [propKey, propValues] of Object.entries(mergedShape)) {
+        // Infer types for all values and deduplicate
+        const propTypes = new Set<string>();
+        for (const val of propValues) {
+          propTypes.add(inferType(val, propKey, interfaces, `${parentPath}.${key}`));
+        }
+        const typeArray = Array.from(propTypes);
+        const propType = typeArray.length === 1 ? typeArray[0] : typeArray.join(" | ");
+        properties.push({ key: propKey, type: propType });
       }
 
       interfaces.set(uniqueName, { name: uniqueName, properties });
@@ -139,18 +138,15 @@ function inferType(
 
 function mergeObjectShapes(
   shapes: { [key: string]: JsonValue }[]
-): { [key: string]: JsonValue } {
-  const merged: { [key: string]: JsonValue } = {};
+): { [key: string]: JsonValue[] } {
+  const merged: { [key: string]: JsonValue[] } = {};
 
   for (const shape of shapes) {
     for (const [key, value] of Object.entries(shape)) {
       if (!(key in merged)) {
-        merged[key] = value;
-      }
-      // If both are objects, we could recursively merge, but for simplicity
-      // we just keep the first non-null value we encounter
-      else if (merged[key] === null && value !== null) {
-        merged[key] = value;
+        merged[key] = [value];
+      } else {
+        merged[key].push(value);
       }
     }
   }
