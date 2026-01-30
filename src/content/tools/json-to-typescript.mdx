@@ -1,0 +1,61 @@
+---
+title: "JSON to TypeScript Converter"
+description: "Generate TypeScript interfaces from JSON data instantly in your browser."
+lastUpdated: 2025-01-30
+---
+
+## What is this tool?
+
+This tool converts JSON data into TypeScript interface definitions. It analyzes the structure of your JSON and generates properly typed interfaces that you can copy directly into your TypeScript projects.
+
+## How to use this tool
+
+1. Paste your JSON into the input area on the left
+2. Click **Convert** to generate TypeScript interfaces
+3. Customize the output using the options below:
+   - **Root name**: Change the name of the root interface (default: `Root`)
+   - **Export**: Add `export` keyword to interfaces
+   - **Use type**: Generate `type` aliases instead of `interface`
+   - **Readonly**: Add `readonly` modifier to all properties
+   - **Optional properties**: Add `?` to make all properties optional
+4. Use the **Copy** button to copy the generated TypeScript
+
+## Type inference rules
+
+The tool automatically infers TypeScript types from JSON values:
+
+| JSON Value | TypeScript Type |
+|------------|-----------------|
+| `"text"` | `string` |
+| `123`, `1.5` | `number` |
+| `true`, `false` | `boolean` |
+| `null` | `null` |
+| `[]` (empty) | `unknown[]` |
+| `[...]` | Inferred element type with `[]` |
+| `{...}` | Named interface |
+
+## Features
+
+**Nested objects** are automatically extracted into separate interfaces with meaningful names derived from the property key.
+
+**Arrays** are analyzed to determine the element type. If an array contains objects, they're merged into a single interface. Mixed-type arrays generate union types like `(string | number)[]`.
+
+**Special property names** containing spaces or special characters are automatically quoted in the output.
+
+## Common use cases
+
+- Converting API responses to TypeScript types
+- Generating types from JSON configuration files
+- Creating interfaces from sample data
+- Quick prototyping with real JSON data
+
+## Is my data safe?
+
+Yes. All processing happens locally in your browser. Your JSON is never sent to any server. You can verify this by disconnecting from the internet and using the tool — it will still work.
+
+## Tips
+
+- Start with a representative JSON sample that includes all possible fields
+- Use the "Optional properties" option when your JSON might have missing fields
+- For API responses, consider adding `export` for easy importing in your project
+- If you have multiple JSON samples, merge them first to capture all possible properties

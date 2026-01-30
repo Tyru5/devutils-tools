@@ -41,6 +41,7 @@ import IpCalculator from "../components/tools/IpCalculator";
 import GitDiffViewer from "../components/tools/GitDiffViewer";
 import ListSorter from "../components/tools/ListSorter";
 import WorkflowBuilder from "../components/tools/WorkflowBuilder";
+import JsonToTypescript from "../components/tools/JsonToTypescript";
 
 export async function getStaticPaths() {
   const toolEntries = await getCollection("tools");
@@ -101,6 +102,7 @@ const slug = entry.slug;
     {slug === "git-diff" && <GitDiffViewer client:idle />}
     {slug === "list-sorter" && <ListSorter client:load />}
     {slug === "workflow" && <WorkflowBuilder client:load />}
+    {slug === "json-to-typescript" && <JsonToTypescript client:load />}
   </Fragment>
   <Content />
 </ToolLayout>
