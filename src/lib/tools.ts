@@ -486,6 +486,22 @@ export const tools: Tool[] = [
     icon: "⛓️",
     beta: true,
   },
+  {
+    slug: "json-to-typescript",
+    name: "JSON to TypeScript Converter",
+    description:
+      "Generate TypeScript interfaces from JSON data. Automatically infers types, handles nested objects and arrays, and supports customization options.",
+    shortDescription: "Generate TS interfaces from JSON",
+    keywords: [
+      "json to typescript",
+      "json to ts",
+      "typescript interface generator",
+      "json to interface",
+      "ts types from json",
+    ],
+    category: "convert",
+    icon: "TS",
+  },
 ];
 
 export function getToolBySlug(slug: string): Tool | undefined {
