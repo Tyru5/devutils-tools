@@ -23,6 +23,13 @@ interface GeneratedInterface {
   properties: { key: string; type: string }[];
 }
 
+interface InferTypeOptions {
+  value: JsonValue;
+  key: string;
+  interfaces: Map<string, GeneratedInterface>;
+  parentPath: string;
+}
+
 function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -44,12 +51,12 @@ function sanitizeInterfaceName(name: string): string {
   return capitalize(sanitized) || "UnnamedType";
 }
 
-function inferType(
-  value: JsonValue,
-  key: string,
-  interfaces: Map<string, GeneratedInterface>,
-  parentPath: string
-): string {
+function inferType({
+  value,
+  key,
+  interfaces,
+  parentPath,
+}: InferTypeOptions): string {
   if (value === null) {
     return "null";
   }
@@ -79,7 +86,7 @@ function inferType(
       if (item !== null && typeof item === "object" && !Array.isArray(item)) {
         objectShapes.push(item);
       } else {
-        elementTypes.add(inferType(item, key, interfaces, parentPath));
+        elementTypes.add(inferType({ value: item, key, interfaces, parentPath }));
       }
     }
 
@@ -94,7 +101,7 @@ function inferType(
         // Infer types for all values and deduplicate
         const propTypes = new Set<string>();
         for (const val of propValues) {
-          propTypes.add(inferType(val, propKey, interfaces, `${parentPath}.${key}`));
+          propTypes.add(inferType({ value: val, key: propKey, interfaces, parentPath: `${parentPath}.${key}` }));
         }
         const typeArray = Array.from(propTypes);
         const propType = typeArray.length === 1 ? typeArray[0] : typeArray.join(" | ");
@@ -120,12 +127,12 @@ function inferType(
     for (const [propKey, propValue] of Object.entries(value)) {
       properties.push({
         key: propKey,
-        type: inferType(
-          propValue,
-          propKey,
+        type: inferType({
+          value: propValue,
+          key: propKey,
           interfaces,
-          `${parentPath}.${key}`
-        ),
+          parentPath: `${parentPath}.${key}`,
+        }),
       });
     }
 
@@ -176,7 +183,7 @@ function generateTypeScript(
   const interfaces = new Map<string, GeneratedInterface>();
 
   // Start inference from the root
-  const rootType = inferType(json, options.rootName, interfaces, "");
+  const rootType = inferType({ value: json, key: options.rootName, interfaces, parentPath: "" });
 
   // Build the output
   const lines: string[] = [];
