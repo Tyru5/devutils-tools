@@ -24,15 +24,15 @@ This tool converts JSON data into TypeScript interface definitions. It analyzes 
 
 The tool automatically infers TypeScript types from JSON values:
 
-| JSON Value | TypeScript Type |
-|------------|-----------------|
-| `"text"` | `string` |
-| `123`, `1.5` | `number` |
-| `true`, `false` | `boolean` |
-| `null` | `null` |
-| `[]` (empty) | `unknown[]` |
-| `[...]` | Inferred element type with `[]` |
-| `{...}` | Named interface |
+| JSON Value      | TypeScript Type                 |
+| --------------- | ------------------------------- |
+| `"text"`        | `string`                        |
+| `123`, `1.5`    | `number`                        |
+| `true`, `false` | `boolean`                       |
+| `null`          | `null`                          |
+| `[]` (empty)    | `unknown[]`                     |
+| `[...]`         | Inferred element type with `[]` |
+| `{...}`         | Named interface                 |
 
 ## Features
 
