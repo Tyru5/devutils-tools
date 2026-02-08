@@ -86,7 +86,9 @@ function inferType({
       if (item !== null && typeof item === "object" && !Array.isArray(item)) {
         objectShapes.push(item);
       } else {
-        elementTypes.add(inferType({ value: item, key, interfaces, parentPath }));
+        elementTypes.add(
+          inferType({ value: item, key, interfaces, parentPath }),
+        );
       }
     }
 
@@ -101,10 +103,18 @@ function inferType({
         // Infer types for all values and deduplicate
         const propTypes = new Set<string>();
         for (const val of propValues) {
-          propTypes.add(inferType({ value: val, key: propKey, interfaces, parentPath: `${parentPath}.${key}` }));
+          propTypes.add(
+            inferType({
+              value: val,
+              key: propKey,
+              interfaces,
+              parentPath: `${parentPath}.${key}`,
+            }),
+          );
         }
         const typeArray = Array.from(propTypes);
-        const propType = typeArray.length === 1 ? typeArray[0] : typeArray.join(" | ");
+        const propType =
+          typeArray.length === 1 ? typeArray[0] : typeArray.join(" | ");
         properties.push({ key: propKey, type: propType });
       }
 
@@ -143,9 +153,9 @@ function inferType({
   return "unknown";
 }
 
-function mergeObjectShapes(
-  shapes: { [key: string]: JsonValue }[]
-): { [key: string]: JsonValue[] } {
+function mergeObjectShapes(shapes: { [key: string]: JsonValue }[]): {
+  [key: string]: JsonValue[];
+} {
   const merged: { [key: string]: JsonValue[] } = {};
 
   for (const shape of shapes) {
@@ -163,7 +173,7 @@ function mergeObjectShapes(
 
 function getUniqueInterfaceName(
   baseName: string,
-  interfaces: Map<string, GeneratedInterface>
+  interfaces: Map<string, GeneratedInterface>,
 ): string {
   if (!interfaces.has(baseName)) {
     return baseName;
@@ -178,12 +188,17 @@ function getUniqueInterfaceName(
 
 function generateTypeScript(
   json: JsonValue,
-  options: ConversionOptions
+  options: ConversionOptions,
 ): string {
   const interfaces = new Map<string, GeneratedInterface>();
 
   // Start inference from the root
-  const rootType = inferType({ value: json, key: options.rootName, interfaces, parentPath: "" });
+  const rootType = inferType({
+    value: json,
+    key: options.rootName,
+    interfaces,
+    parentPath: "",
+  });
 
   // Build the output
   const lines: string[] = [];
@@ -197,7 +212,7 @@ function generateTypeScript(
   // Filter out the root interface to add it last
   const rootInterface = interfaceList.find((i) => i.name === options.rootName);
   const nestedInterfaces = interfaceList.filter(
-    (i) => i.name !== options.rootName
+    (i) => i.name !== options.rootName,
   );
 
   for (const iface of nestedInterfaces) {
@@ -285,7 +300,7 @@ export default function JsonToTypescript() {
 
   const updateOption = <K extends keyof ConversionOptions>(
     key: K,
-    value: ConversionOptions[K]
+    value: ConversionOptions[K],
   ) => {
     setOptions((prev) => ({ ...prev, [key]: value }));
   };

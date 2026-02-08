@@ -28,6 +28,9 @@ const canonicalUrl = `https://devutils.tools/${slug}`;
     <meta name="description" content={description} />
     <meta name="keywords" content={keywords.join(", ")} />
     <link rel="canonical" href={canonicalUrl} />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#ffffff" />
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content={`${title} - DevUtils`} />
@@ -66,6 +69,7 @@ const canonicalUrl = `https://devutils.tools/${slug}`;
         document.documentElement.classList.add("dark");
       }
     </script>
+    <script type="module" src="/src/pwa.ts"></script>
   </head>
   <body
     class="flex min-h-dvh flex-col bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100"
