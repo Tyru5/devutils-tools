@@ -71,9 +71,9 @@ export default function MarkdownPreview() {
   const [isPreviewFullscreen, setIsPreviewFullscreen] = useState(false);
   const [splitPos, setSplitPos] = useState(50);
   const [isResizing, setIsResizing] = useState(false);
-  const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "error">(
-    "idle",
-  );
+  const [shareStatus, setShareStatus] = useState<
+    "idle" | "copied" | "too-large" | "clipboard-error"
+  >("idle");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -136,7 +136,7 @@ export default function MarkdownPreview() {
     const compressed = compressToEncodedURIComponent(markdown);
     const url = `${window.location.origin}${window.location.pathname}#md=${compressed}`;
     if (url.length > 32_000) {
-      setShareStatus("error");
+      setShareStatus("too-large");
       setTimeout(() => setShareStatus("idle"), 2000);
       return;
     }
@@ -144,7 +144,7 @@ export default function MarkdownPreview() {
       await navigator.clipboard.writeText(url);
       setShareStatus("copied");
     } catch {
-      setShareStatus("error");
+      setShareStatus("clipboard-error");
     }
     setTimeout(() => setShareStatus("idle"), 2000);
   };
@@ -271,9 +271,11 @@ export default function MarkdownPreview() {
         >
           {shareStatus === "copied"
             ? "Link Copied!"
-            : shareStatus === "error"
+            : shareStatus === "too-large"
               ? "Too Large"
-              : "Share"}
+              : shareStatus === "clipboard-error"
+                ? "Share Failed"
+                : "Share"}
         </button>
         <div className="flex-1" />
         <button
