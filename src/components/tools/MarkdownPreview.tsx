@@ -2,6 +2,9 @@ import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { Marked } from "marked";
 import DOMPurify from "dompurify";
 import hljs from "highlight.js";
+import LZString from "lz-string";
+const { compressToEncodedURIComponent, decompressFromEncodedURIComponent } =
+  LZString;
 import CopyButton from "./shared/CopyButton";
 
 const markedInstance = new Marked({
@@ -68,6 +71,9 @@ export default function MarkdownPreview() {
   const [isPreviewFullscreen, setIsPreviewFullscreen] = useState(false);
   const [splitPos, setSplitPos] = useState(50);
   const [isResizing, setIsResizing] = useState(false);
+  const [shareStatus, setShareStatus] = useState<
+    "idle" | "copied" | "too-large" | "clipboard-error"
+  >("idle");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -76,6 +82,20 @@ export default function MarkdownPreview() {
 
   useEffect(() => {
     setMounted(true);
+    const hash = window.location.hash;
+    if (hash.startsWith("#md=")) {
+      try {
+        const decompressed = decompressFromEncodedURIComponent(hash.slice(4));
+        if (decompressed) setMarkdown(decompressed);
+      } catch {
+        // corrupt hash — fall back to default
+      }
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search,
+      );
+    }
   }, []);
 
   useEffect(() => {
@@ -111,6 +131,26 @@ export default function MarkdownPreview() {
   }, [markdown, mounted]);
 
   const clear = () => setMarkdown("");
+
+  const shareTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  const handleShare = async () => {
+    clearTimeout(shareTimeoutRef.current!);
+    const compressed = compressToEncodedURIComponent(markdown);
+    const url = `${window.location.origin}${window.location.pathname}#md=${compressed}`;
+    if (url.length > 32_000) {
+      setShareStatus("too-large");
+      shareTimeoutRef.current = setTimeout(() => setShareStatus("idle"), 2000);
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareStatus("copied");
+    } catch {
+      setShareStatus("clipboard-error");
+    }
+    shareTimeoutRef.current = setTimeout(() => setShareStatus("idle"), 2000);
+  };
 
   const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -227,6 +267,19 @@ export default function MarkdownPreview() {
         <button onClick={clear} className="btn btn-ghost">
           Clear
         </button>
+        <button
+          onClick={handleShare}
+          disabled={!markdown.trim()}
+          className="btn btn-secondary"
+        >
+          {shareStatus === "copied"
+            ? "Link Copied!"
+            : shareStatus === "too-large"
+              ? "Too Large"
+              : shareStatus === "clipboard-error"
+                ? "Share Failed"
+                : "Share"}
+        </button>
         <div className="flex-1" />
         <button
           onClick={() => setIsFullscreen(!isFullscreen)}
@@ -301,7 +354,8 @@ export default function MarkdownPreview() {
       </div>
 
       <p className="border-t border-neutral-200 px-4 py-2 text-xs text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
-        Drag and drop .md files • Drag divider to resize • GFM supported
+        Drag and drop .md files • Drag divider to resize • GFM supported • Share
+        to generate a link
       </p>
     </>
   );
