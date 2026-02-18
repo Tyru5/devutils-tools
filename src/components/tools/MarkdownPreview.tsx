@@ -152,6 +152,16 @@ export default function MarkdownPreview() {
     shareTimeoutRef.current = setTimeout(() => setShareStatus("idle"), 2000);
   };
 
+  const downloadFile = (content: string, filename: string, mime: string) => {
+    const blob = new Blob([content], { type: `${mime};charset=utf-8` });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     dragCounterRef.current++;
@@ -262,8 +272,6 @@ export default function MarkdownPreview() {
   const editorContent = (
     <>
       <div className="flex flex-wrap items-center gap-3 border-b border-neutral-200 p-4 dark:border-neutral-800">
-        <CopyButton text={markdown} className="btn btn-secondary" />
-        <CopyButton text={html} className="btn btn-secondary" />
         <button onClick={clear} className="btn btn-ghost">
           Clear
         </button>
@@ -302,9 +310,26 @@ export default function MarkdownPreview() {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
-          <label className="shrink-0 border-b border-neutral-200 px-3 py-2 text-xs font-medium uppercase tracking-widest text-neutral-400 dark:border-neutral-800 dark:text-neutral-500">
-            Markdown
-          </label>
+          <div className="flex shrink-0 items-center gap-2 border-b border-neutral-200 px-3 py-2 dark:border-neutral-800">
+            <label className="text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
+              Markdown
+            </label>
+            <div className="flex-1" />
+            <CopyButton
+              text={markdown}
+              label="Copy"
+              className="btn btn-secondary !px-2 !py-1 !text-xs"
+            />
+            <button
+              onClick={() =>
+                downloadFile(markdown, "document.md", "text/markdown")
+              }
+              disabled={!markdown.trim()}
+              className="btn btn-secondary !px-2 !py-1 !text-xs"
+            >
+              Download
+            </button>
+          </div>
           <textarea
             ref={textareaRef}
             value={markdown}
@@ -332,10 +357,23 @@ export default function MarkdownPreview() {
           className="flex min-h-0 flex-col"
           style={{ width: `${100 - splitPos}%` }}
         >
-          <div className="flex shrink-0 items-center justify-between border-b border-neutral-200 px-3 py-2 dark:border-neutral-800">
+          <div className="flex shrink-0 items-center gap-2 border-b border-neutral-200 px-3 py-2 dark:border-neutral-800">
             <label className="text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
               Preview
             </label>
+            <div className="flex-1" />
+            <CopyButton
+              text={html}
+              label="Copy"
+              className="btn btn-secondary !px-2 !py-1 !text-xs"
+            />
+            <button
+              onClick={() => downloadFile(html, "preview.html", "text/html")}
+              disabled={!markdown.trim()}
+              className="btn btn-secondary !px-2 !py-1 !text-xs"
+            >
+              Download
+            </button>
             <button
               onClick={() => setIsPreviewFullscreen(true)}
               className="text-xs text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"

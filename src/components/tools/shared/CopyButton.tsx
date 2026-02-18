@@ -27,17 +27,23 @@ export default function CopyButton({
     }
   };
 
+  const useCustomStyles = className.includes("btn");
+
   return (
     <button
       onClick={handleCopy}
       disabled={disabled}
-      className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-        disabled
-          ? "cursor-not-allowed text-neutral-300 dark:text-neutral-700"
-          : copied
-            ? "text-neutral-900 dark:text-neutral-100"
-            : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-500 dark:hover:text-neutral-100"
-      } ${className}`}
+      className={
+        useCustomStyles
+          ? `${disabled ? "cursor-not-allowed" : ""} ${className}`
+          : `rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              disabled
+                ? "cursor-not-allowed text-neutral-300 dark:text-neutral-700"
+                : copied
+                  ? "text-neutral-900 dark:text-neutral-100"
+                  : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-500 dark:hover:text-neutral-100"
+            } ${className}`
+      }
     >
       {copied ? "Copied" : label}
     </button>
