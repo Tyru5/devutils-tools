@@ -132,12 +132,15 @@ export default function MarkdownPreview() {
 
   const clear = () => setMarkdown("");
 
+  const shareTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
+
   const handleShare = async () => {
+    clearTimeout(shareTimeoutRef.current!);
     const compressed = compressToEncodedURIComponent(markdown);
     const url = `${window.location.origin}${window.location.pathname}#md=${compressed}`;
     if (url.length > 32_000) {
       setShareStatus("too-large");
-      setTimeout(() => setShareStatus("idle"), 2000);
+      shareTimeoutRef.current = setTimeout(() => setShareStatus("idle"), 2000);
       return;
     }
     try {
@@ -146,7 +149,7 @@ export default function MarkdownPreview() {
     } catch {
       setShareStatus("clipboard-error");
     }
-    setTimeout(() => setShareStatus("idle"), 2000);
+    shareTimeoutRef.current = setTimeout(() => setShareStatus("idle"), 2000);
   };
 
   const handleDragEnter = useCallback((e: React.DragEvent) => {
