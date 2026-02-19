@@ -2,10 +2,16 @@ import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { Marked } from "marked";
 import DOMPurify from "dompurify";
 import hljs from "highlight.js";
-import LZString from "lz-string";
-const { compressToEncodedURIComponent, decompressFromEncodedURIComponent } =
-  LZString;
 import CopyButton from "./shared/CopyButton";
+import {
+  buildShareFile,
+  decodeMarkdownFromHash,
+  encodeMarkdownToHash,
+  isShareHash,
+  MARKDOWN_SHARE_FILE_NAME,
+  MAX_MARKDOWN_SHARE_URL_LENGTH,
+  parseShareFile,
+} from "@/lib/markdownShare";
 
 const markedInstance = new Marked({
   gfm: true,
@@ -64,6 +70,14 @@ function greet(name) {
 `;
 
 export default function MarkdownPreview() {
+  type ShareStatus =
+    | "idle"
+    | "copied-link"
+    | "shared-file"
+    | "downloaded-file"
+    | "clipboard-error"
+    | "share-error";
+
   const [markdown, setMarkdown] = useState(DEFAULT_MARKDOWN);
   const [isDragging, setIsDragging] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -71,9 +85,7 @@ export default function MarkdownPreview() {
   const [isPreviewFullscreen, setIsPreviewFullscreen] = useState(false);
   const [splitPos, setSplitPos] = useState(50);
   const [isResizing, setIsResizing] = useState(false);
-  const [shareStatus, setShareStatus] = useState<
-    "idle" | "copied" | "too-large" | "clipboard-error"
-  >("idle");
+  const [shareStatus, setShareStatus] = useState<ShareStatus>("idle");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -83,19 +95,24 @@ export default function MarkdownPreview() {
   useEffect(() => {
     setMounted(true);
     const hash = window.location.hash;
-    if (hash.startsWith("#md=")) {
-      try {
-        const decompressed = decompressFromEncodedURIComponent(hash.slice(4));
-        if (decompressed) setMarkdown(decompressed);
-      } catch {
-        // corrupt hash — fall back to default
+    if (!isShareHash(hash)) return;
+
+    let cancelled = false;
+    void (async () => {
+      const decoded = await decodeMarkdownFromHash(hash);
+      if (!cancelled && decoded !== null) {
+        setMarkdown(decoded);
       }
       window.history.replaceState(
         null,
         "",
         window.location.pathname + window.location.search,
       );
-    }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -132,34 +149,79 @@ export default function MarkdownPreview() {
 
   const clear = () => setMarkdown("");
 
-  const shareTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const shareTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleShare = async () => {
-    clearTimeout(shareTimeoutRef.current!);
-    const compressed = compressToEncodedURIComponent(markdown);
-    const url = `${window.location.origin}${window.location.pathname}#md=${compressed}`;
-    if (url.length > 32_000) {
-      setShareStatus("too-large");
-      shareTimeoutRef.current = setTimeout(() => setShareStatus("idle"), 2000);
-      return;
-    }
-    try {
-      await navigator.clipboard.writeText(url);
-      setShareStatus("copied");
-    } catch {
-      setShareStatus("clipboard-error");
-    }
+  const showShareStatus = useCallback((status: ShareStatus) => {
+    if (shareTimeoutRef.current) clearTimeout(shareTimeoutRef.current);
+    setShareStatus(status);
     shareTimeoutRef.current = setTimeout(() => setShareStatus("idle"), 2000);
-  };
+  }, []);
 
-  const downloadFile = (content: string, filename: string, mime: string) => {
-    const blob = new Blob([content], { type: `${mime};charset=utf-8` });
+  useEffect(
+    () => () => {
+      if (shareTimeoutRef.current) clearTimeout(shareTimeoutRef.current);
+    },
+    [],
+  );
+
+  const downloadBlob = (blob: Blob, filename: string) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleShare = async () => {
+    try {
+      const { hash } = await encodeMarkdownToHash(markdown);
+      const url = `${window.location.origin}${window.location.pathname}${hash}`;
+
+      if (url.length <= MAX_MARKDOWN_SHARE_URL_LENGTH) {
+        try {
+          await navigator.clipboard.writeText(url);
+          showShareStatus("copied-link");
+        } catch {
+          showShareStatus("clipboard-error");
+        }
+        return;
+      }
+
+      const shareFile = await buildShareFile(markdown);
+      const shareData: ShareData = {
+        title: "Markdown Share",
+        files: [shareFile],
+      };
+
+      if (
+        typeof navigator.share === "function" &&
+        (typeof navigator.canShare !== "function" ||
+          navigator.canShare(shareData))
+      ) {
+        try {
+          await navigator.share(shareData);
+          showShareStatus("shared-file");
+          return;
+        } catch (error) {
+          if (error instanceof DOMException && error.name === "AbortError") {
+            return;
+          }
+        }
+      }
+
+      downloadBlob(shareFile, MARKDOWN_SHARE_FILE_NAME);
+      showShareStatus("downloaded-file");
+    } catch {
+      showShareStatus("share-error");
+    }
+  };
+
+  const downloadFile = (content: string, filename: string, mime: string) => {
+    downloadBlob(
+      new Blob([content], { type: `${mime};charset=utf-8` }),
+      filename,
+    );
   };
 
   const handleDragEnter = useCallback((e: React.DragEvent) => {
@@ -181,23 +243,48 @@ export default function MarkdownPreview() {
     }
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    dragCounterRef.current = 0;
-    setIsDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (
-      file &&
-      (file.name.endsWith(".md") || file.name.endsWith(".markdown"))
-    ) {
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      dragCounterRef.current = 0;
+      setIsDragging(false);
+      const file = e.dataTransfer.files[0];
+      if (!file) return;
+
+      const lowerName = file.name.toLowerCase();
       const reader = new FileReader();
-      reader.onload = (ev) => {
-        const content = ev.target?.result;
-        if (typeof content === "string") setMarkdown(content);
-      };
-      reader.readAsText(file);
-    }
-  }, []);
+
+      if (lowerName.endsWith(".devutils-share")) {
+        reader.onload = (ev) => {
+          const content = ev.target?.result;
+          if (typeof content !== "string") {
+            showShareStatus("share-error");
+            return;
+          }
+
+          void (async () => {
+            try {
+              const parsed = await parseShareFile(content);
+              setMarkdown(parsed);
+            } catch {
+              showShareStatus("share-error");
+            }
+          })();
+        };
+        reader.readAsText(file);
+        return;
+      }
+
+      if (lowerName.endsWith(".md") || lowerName.endsWith(".markdown")) {
+        reader.onload = (ev) => {
+          const content = ev.target?.result;
+          if (typeof content === "string") setMarkdown(content);
+        };
+        reader.readAsText(file);
+      }
+    },
+    [showShareStatus],
+  );
 
   const handleResizeStart = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -280,13 +367,17 @@ export default function MarkdownPreview() {
           disabled={!markdown.trim()}
           className="btn btn-secondary"
         >
-          {shareStatus === "copied"
+          {shareStatus === "copied-link"
             ? "Link Copied!"
-            : shareStatus === "too-large"
-              ? "Too Large"
-              : shareStatus === "clipboard-error"
-                ? "Share Failed"
-                : "Share"}
+            : shareStatus === "shared-file"
+              ? "File Shared!"
+              : shareStatus === "downloaded-file"
+                ? "File Downloaded!"
+                : shareStatus === "clipboard-error"
+                  ? "Clipboard Failed"
+                  : shareStatus === "share-error"
+                    ? "Share Failed"
+                    : "Share"}
         </button>
         <div className="flex-1" />
         <button
@@ -342,7 +433,7 @@ export default function MarkdownPreview() {
           {isDragging && (
             <div className="absolute inset-0 flex items-center justify-center bg-blue-500/20">
               <span className="text-lg font-medium text-blue-600 dark:text-blue-400">
-                Drop .md file here
+                Drop .md or .devutils-share file here
               </span>
             </div>
           )}
@@ -392,8 +483,8 @@ export default function MarkdownPreview() {
       </div>
 
       <p className="border-t border-neutral-200 px-4 py-2 text-xs text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
-        Drag and drop .md files • Drag divider to resize • GFM supported • Share
-        to generate a link
+        Drag and drop .md or .devutils-share files • Drag divider to resize •
+        GFM supported • Share for link or file
       </p>
     </>
   );
