@@ -189,7 +189,7 @@ export default function MarkdownPreview() {
       }
 
       const shareFile = await buildShareFile(markdown);
-      const shareData: ShareData = {
+      const shareData = {
         title: "Markdown Share",
         files: [shareFile],
       };
