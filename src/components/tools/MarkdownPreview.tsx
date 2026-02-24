@@ -75,7 +75,6 @@ export default function MarkdownPreview() {
     | "copied-link"
     | "shared-file"
     | "downloaded-file"
-    | "clipboard-error"
     | "share-error";
 
   const [markdown, setMarkdown] = useState(DEFAULT_MARKDOWN);
@@ -169,51 +168,96 @@ export default function MarkdownPreview() {
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
+    a.style.display = "none";
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
-  const handleShare = async () => {
-    try {
-      const { hash } = await encodeMarkdownToHash(markdown);
+  const handleShare = () => {
+    // Build the URL text as a Promise so we can pass it to the clipboard
+    // synchronously during the user gesture (before any await).
+    const urlPromise = encodeMarkdownToHash(markdown).then(({ hash }) => {
       const url = `${window.location.origin}${window.location.pathname}${hash}`;
+      return url;
+    });
 
-      if (url.length <= MAX_MARKDOWN_SHARE_URL_LENGTH) {
-        try {
-          await navigator.clipboard.writeText(url);
-          showShareStatus("copied-link");
-        } catch {
-          showShareStatus("clipboard-error");
-        }
-        return;
+    // Attempt clipboard.write() synchronously within the click event so the
+    // browser still considers it a user-activated call.  The actual data is
+    // resolved asynchronously inside the ClipboardItem Promise.
+    let clipboardAttempted = false;
+    if (typeof ClipboardItem !== "undefined" && navigator.clipboard?.write) {
+      try {
+        const textBlobPromise = urlPromise.then(
+          (url) => new Blob([url], { type: "text/plain" }),
+        );
+        const item = new ClipboardItem({ "text/plain": textBlobPromise });
+        clipboardAttempted = true;
+        navigator.clipboard
+          .write([item])
+          .then(() => showShareStatus("copied-link"))
+          .catch(() => fallbackShare());
+      } catch {
+        // ClipboardItem constructor may throw in some browsers
       }
+    }
 
-      const shareFile = await buildShareFile(markdown);
-      const shareData = {
-        title: "Markdown Share",
-        files: [shareFile],
-      };
+    if (!clipboardAttempted) {
+      fallbackShare();
+    }
 
-      if (
-        typeof navigator.share === "function" &&
-        (typeof navigator.canShare !== "function" ||
-          navigator.canShare(shareData))
-      ) {
-        try {
-          await navigator.share(shareData);
-          showShareStatus("shared-file");
-          return;
-        } catch (error) {
-          if (error instanceof DOMException && error.name === "AbortError") {
-            return;
+    async function fallbackShare() {
+      try {
+        const url = await urlPromise;
+
+        // Try legacy clipboard as a last resort for short URLs
+        if (url.length <= MAX_MARKDOWN_SHARE_URL_LENGTH) {
+          try {
+            const textarea = document.createElement("textarea");
+            textarea.value = url;
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.select();
+            const ok = document.execCommand("copy");
+            document.body.removeChild(textarea);
+            if (ok) {
+              showShareStatus("copied-link");
+              return;
+            }
+          } catch {
+            // Fall through to file sharing
           }
         }
-      }
 
-      downloadBlob(shareFile, MARKDOWN_SHARE_FILE_NAME);
-      showShareStatus("downloaded-file");
-    } catch {
-      showShareStatus("share-error");
+        const shareFile = await buildShareFile(markdown);
+        const shareData = {
+          title: "Markdown Share",
+          files: [shareFile],
+        };
+
+        if (
+          typeof navigator.share === "function" &&
+          (typeof navigator.canShare !== "function" ||
+            navigator.canShare(shareData))
+        ) {
+          try {
+            await navigator.share(shareData);
+            showShareStatus("shared-file");
+            return;
+          } catch (error) {
+            if (error instanceof DOMException && error.name === "AbortError") {
+              return;
+            }
+          }
+        }
+
+        downloadBlob(shareFile, MARKDOWN_SHARE_FILE_NAME);
+        showShareStatus("downloaded-file");
+      } catch {
+        showShareStatus("share-error");
+      }
     }
   };
 
@@ -373,11 +417,9 @@ export default function MarkdownPreview() {
               ? "File Shared!"
               : shareStatus === "downloaded-file"
                 ? "File Downloaded!"
-                : shareStatus === "clipboard-error"
-                  ? "Clipboard Failed"
-                  : shareStatus === "share-error"
-                    ? "Share Failed"
-                    : "Share"}
+                : shareStatus === "share-error"
+                  ? "Share Failed"
+                  : "Share"}
         </button>
         <div className="flex-1" />
         <button
