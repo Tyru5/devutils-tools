@@ -156,6 +156,14 @@ export default function MarkdownPreview() {
     shareTimeoutRef.current = setTimeout(() => setShareStatus("idle"), 2000);
   }, []);
 
+  const warnIfShareLinkIsLong = useCallback((url: string) => {
+    if (url.length <= MAX_MARKDOWN_SHARE_URL_LENGTH) return;
+
+    window.alert(
+      "Share link copied. Heads up: this link is long and some messaging apps may truncate it or fail to send it. If that happens, use the option to download the file instead.",
+    );
+  }, []);
+
   useEffect(
     () => () => {
       if (shareTimeoutRef.current) clearTimeout(shareTimeoutRef.current);
@@ -196,7 +204,11 @@ export default function MarkdownPreview() {
         clipboardAttempted = true;
         navigator.clipboard
           .write([item])
-          .then(() => showShareStatus("copied-link"))
+          .then(async () => {
+            const url = await urlPromise;
+            showShareStatus("copied-link");
+            warnIfShareLinkIsLong(url);
+          })
           .catch(() => fallbackShare());
       } catch {
         // ClipboardItem constructor may throw in some browsers
@@ -216,14 +228,14 @@ export default function MarkdownPreview() {
           try {
             const textarea = document.createElement("textarea");
             textarea.value = url;
-            textarea.style.position = "fixed";
-            textarea.style.opacity = "0";
+            textarea.style.cssText = "position: fixed; opacity: 0;";
             document.body.appendChild(textarea);
             textarea.select();
             const ok = document.execCommand("copy");
             document.body.removeChild(textarea);
             if (ok) {
               showShareStatus("copied-link");
+              warnIfShareLinkIsLong(url);
               return;
             }
           } catch {
@@ -444,9 +456,9 @@ export default function MarkdownPreview() {
           onDrop={handleDrop}
         >
           <div className="flex shrink-0 items-center gap-2 border-b border-neutral-200 px-3 py-2 dark:border-neutral-800">
-            <label className="text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
+            <span className="text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
               Markdown
-            </label>
+            </span>
             <div className="flex-1" />
             <CopyButton
               text={markdown}
@@ -482,6 +494,11 @@ export default function MarkdownPreview() {
         </div>
 
         <div
+          role="separator"
+          aria-orientation="vertical"
+          aria-valuemin={20}
+          aria-valuemax={80}
+          aria-valuenow={splitPos}
           className="w-1 shrink-0 cursor-col-resize bg-neutral-200 transition-colors hover:bg-blue-400 dark:bg-neutral-700 dark:hover:bg-blue-500"
           onMouseDown={handleResizeStart}
         />
@@ -491,9 +508,9 @@ export default function MarkdownPreview() {
           style={{ width: `${100 - splitPos}%` }}
         >
           <div className="flex shrink-0 items-center gap-2 border-b border-neutral-200 px-3 py-2 dark:border-neutral-800">
-            <label className="text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
+            <span className="text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
               Preview
-            </label>
+            </span>
             <div className="flex-1" />
             <CopyButton
               text={html}

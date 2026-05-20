@@ -10,7 +10,7 @@ const V3_HASH_PREFIX = "#mdv3=";
 const V2_HASH_PREFIX = "#mdv2=";
 const V1_HASH_PREFIX = "#md=";
 
-export const MAX_MARKDOWN_SHARE_URL_LENGTH = 8_192;
+export const MAX_MARKDOWN_SHARE_URL_LENGTH = 1_000;
 export const MARKDOWN_SHARE_FILE_NAME = "markdown-preview.devutils-share";
 
 type MarkdownShareFilePayload = {
