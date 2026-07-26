@@ -1,14 +1,15 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useId, useRef } from "react";
 import Textarea from "./shared/Textarea";
 import CopyButton from "./shared/CopyButton";
 import {
   transforms,
-  executeTransform,
+  executeWorkflow,
   getTransformById,
   generateId,
   getWorkflows,
   saveWorkflow,
   deleteWorkflow,
+  clearWorkflows,
   encodeWorkflowToUrl,
   decodeWorkflowFromUrl,
   type TransformType,
@@ -35,6 +36,10 @@ const categoryOrder: Transform["category"][] = [
   "convert",
 ];
 
+function clearStepResults(steps: WorkflowStep[]): WorkflowStep[] {
+  return steps.map(({ id, transformId }) => ({ id, transformId }));
+}
+
 export default function WorkflowBuilder() {
   const [input, setInput] = useState("");
   const [steps, setSteps] = useState<WorkflowStep[]>([]);
@@ -44,9 +49,24 @@ export default function WorkflowBuilder() {
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [showTransformPicker, setShowTransformPicker] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [hasStorageError, setHasStorageError] = useState(false);
+  const transformPickerRef = useRef<HTMLDivElement>(null);
+  const saveDialogRef = useRef<HTMLDivElement>(null);
+  const workflowVersionRef = useRef(0);
+  const shareUrlId = useId();
 
   useEffect(() => {
-    setSavedWorkflows(getWorkflows());
+    try {
+      setSavedWorkflows(getWorkflows());
+    } catch (error) {
+      setHasStorageError(true);
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Saved workflows could not be loaded.",
+      );
+    }
 
     const params = new URLSearchParams(window.location.search);
     const chain = params.get("chain");
@@ -59,60 +79,122 @@ export default function WorkflowBuilder() {
             transformId: id,
           })),
         );
+      } else {
+        setMessage(
+          "This shared workflow link is invalid or no longer supported.",
+        );
       }
     }
   }, []);
 
+  useEffect(() => {
+    const dialog = showTransformPicker
+      ? transformPickerRef.current
+      : showSaveModal
+        ? saveDialogRef.current
+        : null;
+    if (!dialog) return;
+
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const focusableSelector =
+      'button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])';
+    const focusTimer = requestAnimationFrame(() => {
+      const autofocus = dialog.querySelector<HTMLElement>("[autofocus]");
+      (
+        autofocus ??
+        dialog.querySelector<HTMLElement>(focusableSelector) ??
+        dialog
+      ).focus();
+    });
+
+    const handleDialogKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setShowTransformPicker(false);
+        setShowSaveModal(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const focusable = Array.from(
+        dialog.querySelectorAll<HTMLElement>(focusableSelector),
+      );
+      if (focusable.length === 0) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleDialogKeyDown);
+    return () => {
+      cancelAnimationFrame(focusTimer);
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleDialogKeyDown);
+      previouslyFocused?.focus();
+    };
+  }, [showSaveModal, showTransformPicker]);
+
   const addStep = (transformId: TransformType) => {
-    setSteps([...steps, { id: generateId(), transformId }]);
+    workflowVersionRef.current += 1;
+    setSteps((current) => [
+      ...clearStepResults(current),
+      { id: generateId(), transformId },
+    ]);
+    setShareUrl(null);
     setShowTransformPicker(false);
   };
 
   const removeStep = (stepId: string) => {
-    setSteps(steps.filter((s) => s.id !== stepId));
+    workflowVersionRef.current += 1;
+    setSteps((current) =>
+      clearStepResults(current.filter((step) => step.id !== stepId)),
+    );
+    setShareUrl(null);
   };
 
   const moveStep = (index: number, direction: "up" | "down") => {
-    const newSteps = [...steps];
-    const newIndex = direction === "up" ? index - 1 : index + 1;
-    if (newIndex < 0 || newIndex >= steps.length) return;
-    [newSteps[index], newSteps[newIndex]] = [
-      newSteps[newIndex],
-      newSteps[index],
-    ];
-    setSteps(newSteps);
+    workflowVersionRef.current += 1;
+    setSteps((current) => {
+      const newSteps = clearStepResults(current);
+      const newIndex = direction === "up" ? index - 1 : index + 1;
+      if (newIndex < 0 || newIndex >= newSteps.length) return current;
+      [newSteps[index], newSteps[newIndex]] = [
+        newSteps[newIndex],
+        newSteps[index],
+      ];
+      return newSteps;
+    });
+    setShareUrl(null);
   };
 
   const runWorkflow = useCallback(async () => {
-    if (!input.trim() || steps.length === 0) return;
+    if (steps.length === 0) return;
 
     setIsRunning(true);
-    let currentInput = input;
-    const newSteps = [...steps];
-
-    for (let i = 0; i < newSteps.length; i++) {
-      try {
-        const output = await executeTransform(
-          newSteps[i].transformId,
-          currentInput,
-        );
-        newSteps[i] = { ...newSteps[i], output, error: undefined };
-        currentInput = output;
-      } catch (e) {
-        newSteps[i] = {
-          ...newSteps[i],
-          output: undefined,
-          error: e instanceof Error ? e.message : "Transform failed",
-        };
-        break;
-      }
+    const runVersion = ++workflowVersionRef.current;
+    try {
+      const results = await executeWorkflow(steps, input);
+      if (workflowVersionRef.current === runVersion) setSteps(results);
+    } finally {
+      setIsRunning(false);
     }
-
-    setSteps(newSteps);
-    setIsRunning(false);
   }, [input, steps]);
 
   const clearAll = () => {
+    workflowVersionRef.current += 1;
     setInput("");
     setSteps([]);
     setShareUrl(null);
@@ -121,45 +203,96 @@ export default function WorkflowBuilder() {
   const handleSave = () => {
     if (!workflowName.trim() || steps.length === 0) return;
 
-    const trimmedName = workflowName.trim();
-    const existingWorkflows = getWorkflows();
-    const duplicateWorkflow = existingWorkflows.find(
-      (w) => w.name.toLowerCase() === trimmedName.toLowerCase(),
-    );
-
-    if (duplicateWorkflow) {
-      const confirmOverwrite = window.confirm(
-        `A workflow named "${duplicateWorkflow.name}" already exists. Do you want to overwrite it?`,
+    try {
+      const trimmedName = workflowName.trim();
+      const existingWorkflows = getWorkflows();
+      const duplicateWorkflow = existingWorkflows.find(
+        (workflow) => workflow.name.toLowerCase() === trimmedName.toLowerCase(),
       );
-      if (!confirmOverwrite) return;
+
+      if (duplicateWorkflow) {
+        const confirmOverwrite = window.confirm(
+          `A workflow named "${duplicateWorkflow.name}" already exists. Do you want to overwrite it?`,
+        );
+        if (!confirmOverwrite) return;
+      }
+
+      const workflow: Workflow = {
+        id: duplicateWorkflow?.id ?? generateId(),
+        name: trimmedName,
+        steps: clearStepResults(steps),
+        createdAt: duplicateWorkflow?.createdAt ?? Date.now(),
+        updatedAt: Date.now(),
+      };
+
+      saveWorkflow(workflow);
+      setSavedWorkflows(getWorkflows());
+      setWorkflowName("");
+      setShowSaveModal(false);
+      setHasStorageError(false);
+      setMessage(`Saved workflow "${trimmedName}".`);
+    } catch (error) {
+      setHasStorageError(true);
+      setShowSaveModal(false);
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "The workflow could not be saved.",
+      );
     }
-
-    const workflow: Workflow = {
-      id: duplicateWorkflow?.id ?? generateId(),
-      name: trimmedName,
-      steps: steps.map((s) => ({ id: s.id, transformId: s.transformId })),
-      createdAt: duplicateWorkflow?.createdAt ?? Date.now(),
-      updatedAt: Date.now(),
-    };
-
-    saveWorkflow(workflow);
-    setSavedWorkflows(getWorkflows());
-    setWorkflowName("");
-    setShowSaveModal(false);
   };
 
   const loadWorkflow = (workflow: Workflow) => {
+    workflowVersionRef.current += 1;
     setSteps(
       workflow.steps.map((s) => ({
         id: generateId(),
         transformId: s.transformId,
       })),
     );
+    setShareUrl(null);
   };
 
   const handleDelete = (id: string) => {
-    deleteWorkflow(id);
-    setSavedWorkflows(getWorkflows());
+    const workflow = savedWorkflows.find((saved) => saved.id === id);
+    if (
+      !workflow ||
+      !window.confirm(`Delete the saved workflow "${workflow.name}"?`)
+    ) {
+      return;
+    }
+
+    try {
+      deleteWorkflow(id);
+      setSavedWorkflows(getWorkflows());
+      setHasStorageError(false);
+      setMessage(`Deleted workflow "${workflow.name}".`);
+    } catch (error) {
+      setHasStorageError(true);
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "The saved workflow could not be deleted.",
+      );
+    }
+  };
+
+  const handleResetSavedWorkflows = () => {
+    if (!window.confirm("Clear all saved workflow data from this browser?"))
+      return;
+
+    try {
+      clearWorkflows();
+      setSavedWorkflows([]);
+      setHasStorageError(false);
+      setMessage("Saved workflow data was cleared.");
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Saved workflow data could not be cleared.",
+      );
+    }
   };
 
   const generateShareUrl = () => {
@@ -169,17 +302,42 @@ export default function WorkflowBuilder() {
     setShareUrl(url);
   };
 
-  const finalOutput =
-    steps.length > 0 ? steps[steps.length - 1]?.output : undefined;
+  const finalOutput = steps.at(-1)?.output;
   const hasError = steps.some((s) => s.error);
 
   return (
     <div className="space-y-6">
+      {message && (
+        <div
+          role={hasStorageError ? "alert" : "status"}
+          className={`flex items-center justify-between gap-4 rounded-md border px-4 py-3 text-sm ${
+            hasStorageError
+              ? "border-red-300 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
+              : "border-neutral-200 bg-neutral-50 text-neutral-700 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300"
+          }`}
+        >
+          <span>{message}</span>
+          {hasStorageError && (
+            <button
+              type="button"
+              onClick={handleResetSavedWorkflows}
+              className="btn btn-secondary shrink-0 text-sm"
+            >
+              Clear Saved Data
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Input Section */}
       <div className="card">
         <Textarea
           value={input}
-          onChange={setInput}
+          onChange={(value) => {
+            workflowVersionRef.current += 1;
+            setInput(value);
+            setSteps((current) => clearStepResults(current));
+          }}
           placeholder="Enter your input data here..."
           label="Input"
           rows={6}
@@ -217,7 +375,7 @@ export default function WorkflowBuilder() {
                   className={`group relative rounded-lg border p-4 transition-colors ${
                     step.error
                       ? "border-red-300 bg-red-50 dark:border-red-900 dark:bg-red-950"
-                      : step.output
+                      : step.output !== undefined
                         ? "border-green-300 bg-green-50 dark:border-green-900 dark:bg-green-950"
                         : "border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"
                   }`}
@@ -232,14 +390,16 @@ export default function WorkflowBuilder() {
                         {transform?.description}
                       </span>
                     </div>
-                    <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                    <div className="flex items-center gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
                       <button
+                        type="button"
                         onClick={() => moveStep(index, "up")}
                         disabled={index === 0}
                         className="rounded p-1 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-600 disabled:opacity-30 dark:hover:bg-neutral-700"
-                        title="Move up"
+                        aria-label={`Move ${transform?.name ?? "transform"} up`}
                       >
                         <svg
+                          aria-hidden="true"
                           className="size-4"
                           fill="none"
                           viewBox="0 0 24 24"
@@ -254,12 +414,14 @@ export default function WorkflowBuilder() {
                         </svg>
                       </button>
                       <button
+                        type="button"
                         onClick={() => moveStep(index, "down")}
                         disabled={index === steps.length - 1}
                         className="rounded p-1 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-600 disabled:opacity-30 dark:hover:bg-neutral-700"
-                        title="Move down"
+                        aria-label={`Move ${transform?.name ?? "transform"} down`}
                       >
                         <svg
+                          aria-hidden="true"
                           className="size-4"
                           fill="none"
                           viewBox="0 0 24 24"
@@ -274,11 +436,13 @@ export default function WorkflowBuilder() {
                         </svg>
                       </button>
                       <button
+                        type="button"
                         onClick={() => removeStep(step.id)}
                         className="rounded p-1 text-neutral-400 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-950"
-                        title="Remove"
+                        aria-label={`Remove ${transform?.name ?? "transform"}`}
                       >
                         <svg
+                          aria-hidden="true"
                           className="size-4"
                           fill="none"
                           viewBox="0 0 24 24"
@@ -299,7 +463,7 @@ export default function WorkflowBuilder() {
                       Error: {step.error}
                     </div>
                   )}
-                  {step.output && (
+                  {step.output !== undefined && (
                     <details className="mt-2">
                       <summary className="cursor-pointer text-sm text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300">
                         Show intermediate output
@@ -340,7 +504,7 @@ export default function WorkflowBuilder() {
       <div className="flex flex-wrap items-center gap-3">
         <button
           onClick={runWorkflow}
-          disabled={!input.trim() || steps.length === 0 || isRunning}
+          disabled={steps.length === 0 || isRunning}
           className="btn btn-primary disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isRunning ? "Running..." : "Run Chain"}
@@ -367,11 +531,15 @@ export default function WorkflowBuilder() {
       {/* Share URL */}
       {shareUrl && (
         <div className="card">
-          <label className="mb-2 block text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
+          <label
+            htmlFor={shareUrlId}
+            className="mb-2 block text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500"
+          >
             Share URL
           </label>
           <div className="flex gap-2">
             <input
+              id={shareUrlId}
               type="text"
               value={shareUrl}
               readOnly
@@ -383,13 +551,16 @@ export default function WorkflowBuilder() {
       )}
 
       {/* Output */}
-      {finalOutput && !hasError && (
+      {finalOutput !== undefined && !hasError && (
         <div className="card">
           <div className="mb-2 flex items-center justify-between">
-            <label className="text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
+            <h3 className="text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
               Final Output
-            </label>
-            <CopyButton text={finalOutput} />
+            </h3>
+            <CopyButton
+              text={finalOutput}
+              disabled={finalOutput.length === 0}
+            />
           </div>
           <pre className="max-h-64 overflow-auto rounded-md bg-neutral-50 p-4 font-mono text-sm dark:bg-neutral-900">
             {finalOutput}
@@ -424,10 +595,13 @@ export default function WorkflowBuilder() {
                     Load
                   </button>
                   <button
+                    type="button"
                     onClick={() => handleDelete(workflow.id)}
                     className="rounded p-1.5 text-neutral-400 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-950"
+                    aria-label={`Delete ${workflow.name}`}
                   >
                     <svg
+                      aria-hidden="true"
                       className="size-4"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -450,15 +624,46 @@ export default function WorkflowBuilder() {
 
       {/* Transform Picker Modal */}
       {showTransformPicker && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="max-h-[80vh] w-full max-w-2xl overflow-auto rounded-lg bg-white p-6 dark:bg-neutral-900">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setShowTransformPicker(false);
+            }
+          }}
+        >
+          <div
+            ref={transformPickerRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="transform-picker-title"
+            aria-describedby="transform-picker-description"
+            tabIndex={-1}
+            className="max-h-[80vh] w-full max-w-2xl overflow-auto rounded-lg bg-white p-6 outline-none dark:bg-neutral-900"
+          >
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Add Transform</h3>
+              <div>
+                <h3
+                  id="transform-picker-title"
+                  className="text-lg font-semibold"
+                >
+                  Add Transform
+                </h3>
+                <p
+                  id="transform-picker-description"
+                  className="text-sm text-neutral-500"
+                >
+                  Choose the next operation in the chain.
+                </p>
+              </div>
               <button
+                type="button"
                 onClick={() => setShowTransformPicker(false)}
                 className="rounded p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-800"
+                aria-label="Close transform picker"
               >
                 <svg
+                  aria-hidden="true"
                   className="size-5"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -508,16 +713,43 @@ export default function WorkflowBuilder() {
 
       {/* Save Modal */}
       {showSaveModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-lg bg-white p-6 dark:bg-neutral-900">
-            <h3 className="mb-4 text-lg font-semibold">Save Workflow</h3>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setShowSaveModal(false);
+          }}
+        >
+          <div
+            ref={saveDialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="save-workflow-title"
+            aria-describedby="save-workflow-description"
+            tabIndex={-1}
+            className="w-full max-w-md rounded-lg bg-white p-6 outline-none dark:bg-neutral-900"
+          >
+            <h3 id="save-workflow-title" className="text-lg font-semibold">
+              Save Workflow
+            </h3>
+            <p
+              id="save-workflow-description"
+              className="mb-4 text-sm text-neutral-500"
+            >
+              Saved workflows stay in this browser.
+            </p>
+            <label
+              htmlFor="workflow-name"
+              className="mb-2 block text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500"
+            >
+              Workflow name
+            </label>
             <input
+              id="workflow-name"
               type="text"
               value={workflowName}
               onChange={(e) => setWorkflowName(e.target.value)}
               placeholder="Workflow name..."
               className="input mb-4"
-              autoFocus
             />
             <div className="flex justify-end gap-2">
               <button

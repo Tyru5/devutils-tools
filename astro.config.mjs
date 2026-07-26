@@ -6,7 +6,7 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
-  site: "https://devutils.tools",
+  site: "https://devutility.tools",
   integrations: [
     react(),
     tailwind(),

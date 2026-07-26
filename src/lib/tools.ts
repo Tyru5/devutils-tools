@@ -484,7 +484,6 @@ export const tools: Tool[] = [
     ],
     category: "workflow",
     icon: "⛓️",
-    beta: true,
   },
   {
     slug: "json-to-typescript",

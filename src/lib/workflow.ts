@@ -237,6 +237,14 @@ export const transforms: Transform[] = [
   },
 ];
 
+const transformIds = new Set<TransformType>(
+  transforms.map((transform) => transform.id),
+);
+
+function isTransformType(value: unknown): value is TransformType {
+  return typeof value === "string" && transformIds.has(value as TransformType);
+}
+
 export interface WorkflowStep {
   id: string;
   transformId: TransformType;
@@ -254,6 +262,34 @@ export interface Workflow {
 
 const STORAGE_KEY = "devutils-workflows";
 
+function isWorkflow(value: unknown): value is Workflow {
+  if (typeof value !== "object" || value === null) return false;
+
+  const workflow = value as Partial<Workflow>;
+  return (
+    typeof workflow.id === "string" &&
+    workflow.id.length > 0 &&
+    typeof workflow.name === "string" &&
+    workflow.name.length > 0 &&
+    typeof workflow.createdAt === "number" &&
+    Number.isFinite(workflow.createdAt) &&
+    typeof workflow.updatedAt === "number" &&
+    Number.isFinite(workflow.updatedAt) &&
+    Array.isArray(workflow.steps) &&
+    workflow.steps.length > 0 &&
+    workflow.steps.every(
+      (step) =>
+        typeof step === "object" &&
+        step !== null &&
+        typeof step.id === "string" &&
+        step.id.length > 0 &&
+        isTransformType(step.transformId) &&
+        (step.output === undefined || typeof step.output === "string") &&
+        (step.error === undefined || typeof step.error === "string"),
+    )
+  );
+}
+
 export function generateId(): string {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array);
@@ -262,12 +298,20 @@ export function generateId(): string {
 
 export function getWorkflows(): Workflow[] {
   if (typeof window === "undefined") return [];
+  const data = localStorage.getItem(STORAGE_KEY);
+  if (!data) return [];
+
+  let parsed: unknown;
   try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+    parsed = JSON.parse(data);
   } catch {
-    return [];
+    throw new Error("Saved workflows contain invalid data.");
   }
+
+  if (!Array.isArray(parsed) || !parsed.every(isWorkflow)) {
+    throw new Error("Saved workflows are corrupted or no longer supported.");
+  }
+  return parsed;
 }
 
 export function saveWorkflow(workflow: Workflow): void {
@@ -286,6 +330,10 @@ export function deleteWorkflow(id: string): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(workflows));
 }
 
+export function clearWorkflows(): void {
+  localStorage.removeItem(STORAGE_KEY);
+}
+
 export function encodeWorkflowToUrl(steps: WorkflowStep[]): string {
   const transformIds = steps.map((s) => s.transformId);
   const encoded = btoa(JSON.stringify(transformIds));
@@ -295,7 +343,12 @@ export function encodeWorkflowToUrl(steps: WorkflowStep[]): string {
 export function decodeWorkflowFromUrl(encoded: string): TransformType[] {
   try {
     const decoded = atob(encoded);
-    return JSON.parse(decoded);
+    const parsed: unknown = JSON.parse(decoded);
+    return Array.isArray(parsed) &&
+      parsed.length > 0 &&
+      parsed.every(isTransformType)
+      ? parsed
+      : [];
   } catch {
     return [];
   }
@@ -314,6 +367,50 @@ async function hashText(
   const hashBuffer = await crypto.subtle.digest(algorithm, data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function unescapeString(input: string): string {
+  const escapeCharacters: Record<string, string> = {
+    '"': '"',
+    n: "\n",
+    r: "\r",
+    t: "\t",
+    "\\": "\\",
+  };
+  let result = "";
+
+  for (let index = 0; index < input.length; index += 1) {
+    const character = input[index];
+    const escaped = input[index + 1];
+    if (
+      character === "\\" &&
+      escaped !== undefined &&
+      escaped in escapeCharacters
+    ) {
+      result += escapeCharacters[escaped];
+      index += 1;
+    } else {
+      result += character;
+    }
+  }
+
+  return result;
+}
+
+function stringifyFiniteJson(value: unknown): string {
+  const json = JSON.stringify(
+    value,
+    (_, nestedValue: unknown) => {
+      if (typeof nestedValue === "number" && !Number.isFinite(nestedValue)) {
+        throw new Error("JSON cannot represent non-finite numbers");
+      }
+      return nestedValue;
+    },
+    2,
+  );
+  if (json === undefined)
+    throw new Error("Value cannot be represented as JSON");
+  return json;
 }
 
 export async function executeTransform(
@@ -347,13 +444,18 @@ export async function executeTransform(
     case "json-minify":
       return JSON.stringify(JSON.parse(input));
 
-    case "json-parse":
-      return JSON.stringify(JSON.parse(input), null, 2);
+    case "json-parse": {
+      const parsed = JSON.parse(input);
+      const unwrapped =
+        typeof parsed === "string" ? JSON.parse(parsed) : parsed;
+      return JSON.stringify(unwrapped, null, 2);
+    }
 
     case "html-encode": {
-      const div = document.createElement("div");
-      div.textContent = input;
-      return div.innerHTML;
+      return input
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
     }
 
     case "html-decode": {
@@ -371,10 +473,10 @@ export async function executeTransform(
         result = result.split(entity).join(char);
       }
       result = result.replace(/&#(\d+);/g, (_, code) =>
-        String.fromCharCode(parseInt(code, 10)),
+        String.fromCodePoint(parseInt(code, 10)),
       );
       result = result.replace(/&#x([0-9a-fA-F]+);/g, (_, code) =>
-        String.fromCharCode(parseInt(code, 16)),
+        String.fromCodePoint(parseInt(code, 16)),
       );
       return result;
     }
@@ -401,7 +503,7 @@ export async function executeTransform(
       return input.trim();
 
     case "reverse":
-      return input.split("").reverse().join("");
+      return Array.from(input).reverse().join("");
 
     case "escape":
       return input
@@ -412,12 +514,7 @@ export async function executeTransform(
         .replace(/"/g, '\\"');
 
     case "unescape":
-      return input
-        .replace(/\\"/g, '"')
-        .replace(/\\t/g, "\t")
-        .replace(/\\r/g, "\r")
-        .replace(/\\n/g, "\n")
-        .replace(/\\\\/g, "\\");
+      return unescapeString(input);
 
     case "jwt-decode": {
       const parts = input.trim().split(".");
@@ -436,7 +533,7 @@ export async function executeTransform(
     case "yaml-to-json": {
       const YAML = await import("yaml");
       const parsed = YAML.parse(input);
-      return JSON.stringify(parsed, null, 2);
+      return stringifyFiniteJson(parsed);
     }
 
     case "json-to-yaml": {
@@ -447,14 +544,21 @@ export async function executeTransform(
 
     case "csv-to-json": {
       const Papa = await import("papaparse");
-      const result = Papa.default.parse(input, { header: true });
+      const result = Papa.default.parse(input, {
+        header: true,
+        delimiter: ",",
+        skipEmptyLines: true,
+      });
+      if (result.errors.length > 0) {
+        throw new Error(result.errors.map((error) => error.message).join("; "));
+      }
       return JSON.stringify(result.data, null, 2);
     }
 
     case "toml-to-json": {
       const TOML = await import("smol-toml");
       const parsed = TOML.parse(input);
-      return JSON.stringify(parsed, null, 2);
+      return stringifyFiniteJson(parsed);
     }
 
     case "json-to-toml": {
@@ -470,6 +574,36 @@ export async function executeTransform(
 
 export function getTransformById(id: TransformType): Transform | undefined {
   return transforms.find((t) => t.id === id);
+}
+
+export async function executeWorkflow(
+  steps: WorkflowStep[],
+  input: string,
+): Promise<WorkflowStep[]> {
+  let currentInput = input;
+  const results: WorkflowStep[] = steps.map(({ id, transformId }) => ({
+    id,
+    transformId,
+  }));
+
+  for (let index = 0; index < results.length; index += 1) {
+    try {
+      const output = await executeTransform(
+        results[index].transformId,
+        currentInput,
+      );
+      results[index] = { ...results[index], output };
+      currentInput = output;
+    } catch (error) {
+      results[index] = {
+        ...results[index],
+        error: error instanceof Error ? error.message : "Transform failed",
+      };
+      break;
+    }
+  }
+
+  return results;
 }
 
 export function getTransformsByCategory(

@@ -16,7 +16,7 @@ const ERROR_LEVELS: {
 ];
 
 export default function QrGenerator() {
-  const [text, setText] = useState("https://devutils.tools");
+  const [text, setText] = useState("https://devutility.tools");
   const [size, setSize] = useState(256);
   const [errorLevel, setErrorLevel] = useState<ErrorCorrectionLevel>("M");
   const [fgColor, setFgColor] = useState("#000000");

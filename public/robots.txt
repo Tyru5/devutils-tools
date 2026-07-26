@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://devutils.tools/sitemap-index.xml
+Sitemap: https://devutility.tools/sitemap-index.xml

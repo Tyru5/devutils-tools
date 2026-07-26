@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 interface TextareaProps {
   value: string;
   onChange?: (value: string) => void;
@@ -17,14 +19,20 @@ export default function Textarea({
   className = "",
   label,
 }: TextareaProps) {
+  const id = useId();
+
   return (
     <div className="flex flex-col">
       {label && (
-        <label className="mb-2 text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
+        <label
+          htmlFor={id}
+          className="mb-2 text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500"
+        >
           {label}
         </label>
       )}
       <textarea
+        id={id}
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
         placeholder={placeholder}
